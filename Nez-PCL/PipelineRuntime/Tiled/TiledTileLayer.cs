@@ -185,7 +185,7 @@ namespace Nez.Tiled
 		/// </summary>
 		/// <returns>The tile.</returns>
 		/// <param name="tile">Tile.</param>
-		public TiledTile setTile( TiledTile tile )
+		public virtual TiledTile setTile( TiledTile tile )
 		{
 			tiles[tile.x + tile.y * width] = tile;
 			tile.tileset = tiledMap.getTilesetForTileId( tile.id );
@@ -199,7 +199,7 @@ namespace Nez.Tiled
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public void removeTile( int x, int y )
+		public virtual void removeTile( int x, int y )
 		{
 			tiles[x + y * width] = null;
 		}

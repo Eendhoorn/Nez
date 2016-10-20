@@ -51,8 +51,11 @@ namespace Nez.Sprites
 		{
 			_subtexture = subtexture;
 
-			if( _subtexture != null )
-				_origin = subtexture.origin;
+            if ( _subtexture != null )
+            {
+                _origin = subtexture.origin;
+                if ( flipX ) _origin.X = subtexture.sourceRect.Width - subtexture.origin.X;
+            }
 			return this;
 		}
 

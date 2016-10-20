@@ -38,9 +38,10 @@ namespace Nez.Tiled
 
 			var id = firstId;
 			_regions = new Dictionary<int,Subtexture>();
-			for( var y = margin; y < texture.Height - margin; y += tileHeight + spacing )
-			{
-				for( var x = margin; x < texture.Width - margin; x += tileWidth + spacing )
+			for( var y = margin; y < texture.Height - margin - tileHeight; y += tileHeight + spacing )
+            //added  - tileheight, otherwise leftover space in a tilesheet smaller than a tile would be considered as a region
+            {
+                for ( var x = margin; x < texture.Width - margin - tileWidth; x += tileWidth + spacing ) //added - tilewidth, same as above
 				{
 					_regions.Add( id, new Subtexture( texture, x, y, tileWidth, tileHeight ) );
 					id++;

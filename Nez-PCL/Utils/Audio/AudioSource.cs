@@ -15,6 +15,11 @@ namespace Nez.Audio
 		bool _useRandomPan;
 		float _panMin, _panMax;
 
+        public int Length
+        {
+            get { return _soundEffects.Count; }
+        }
+
 
 		/// <summary>
 		/// if a pitch range is set every time play is called a random pitch will be used

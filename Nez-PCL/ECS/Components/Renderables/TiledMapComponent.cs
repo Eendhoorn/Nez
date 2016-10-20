@@ -118,6 +118,8 @@ namespace Nez
 
 		public override void onEntityTransformChanged()
 		{
+            base.onEntityTransformChanged(); //not sure why this was missing, but the bounds weren't recalculated when changing renderLayers without this!
+
 			removeColliders();
 			addColliders();
 		}
