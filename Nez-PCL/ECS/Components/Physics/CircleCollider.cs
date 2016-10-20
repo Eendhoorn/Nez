@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Nez.PhysicsShapes;
 
 
@@ -9,7 +8,7 @@ namespace Nez
 	{
 		public float radius
 		{
-			get { return ((Circle)shape).radius; }
+			get { return ( (Circle)shape ).radius; }
 			set { setRadius( value ); }
 		}
 
@@ -19,7 +18,7 @@ namespace Nez
 		/// entity is added to the scene.
 		/// </summary>
 		public CircleCollider()
-		{}
+		{ }
 
 
 		/// <summary>
@@ -38,29 +37,14 @@ namespace Nez
 		}
 
 
-		/// <summary>
-		/// creates a <see cref="Nez.CircleCollider"/> with radius. Note that when specifying a radius if using a RenderableComponent on the Entity as well you
-		/// will need to set the appropriate origin to align the <see cref="Nez.CircleCollider"/>
-		/// </summary>
-		/// <param name="radius">Radius.</param>
-		/// <param name="origin">Origin.</param>
-		public CircleCollider( float radius, Vector2 origin )
-		{
-			shape = new Circle( radius );
-			_origin = origin;
-		}
-
-
 		#region Fluent setters
 
 		public CircleCollider setRadius( float radius )
 		{
 			if( radius != ( (Circle)shape ).radius )
 			{
-				// store the old bounds so we can update ourself after modifying them
-				var oldBounds = bounds;
 				( (Circle)shape ).radius = radius;
-				_areBoundsDirty = true;
+				_isPositionDirty = true;
 
 				if( entity != null && _isParentEntityAddedToScene )
 					Physics.updateCollider( this );
@@ -73,14 +57,16 @@ namespace Nez
 
 		public override void debugRender( Graphics graphics )
 		{
-			graphics.batcher.drawCircle( bounds.center, ((Circle)shape).radius, Color.IndianRed );
-			graphics.batcher.drawPixel( bounds.center, Color.IndianRed, 4 );
+			graphics.batcher.drawHollowRect( bounds, Color.White * 0.3f );
+			graphics.batcher.drawCircle( shape.position, ( (Circle)shape ).radius, DefaultColors.colliderEdge );
+			graphics.batcher.drawPixel( entity.transform.position, DefaultColors.colliderPosition, 4 );
+			graphics.batcher.drawPixel( shape.position, DefaultColors.colliderCenter, 2 );
 		}
 
 
 		public override string ToString()
 		{
-			return string.Format( "[CircleCollider: bounds: {0}, radius: {1}", bounds, ((Circle)shape).radius );
+			return string.Format( "[CircleCollider: bounds: {0}, radius: {1}", bounds, ( (Circle)shape ).radius );
 		}
 
 	}

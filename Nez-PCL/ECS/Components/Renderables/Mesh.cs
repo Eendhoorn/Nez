@@ -23,7 +23,7 @@ namespace Nez
 			{
 				if( _areBoundsDirty )
 				{
-					_bounds.calculateBounds( entity.transform.position + _topLeftVertPosition, _localOffset, _origin, entity.transform.scale, entity.transform.rotation, _width, _height );
+					_bounds.calculateBounds( entity.transform.position + _topLeftVertPosition, Vector2.Zero, Vector2.Zero, entity.transform.scale, entity.transform.rotation, _width, _height );
 					_areBoundsDirty = false;
 				}
 
@@ -130,6 +130,18 @@ namespace Nez
 
 
 		/// <summary>
+		/// sets the color for all of the verts
+		/// </summary>
+		/// <returns>The color.</returns>
+		/// <param name="color">Color.</param>
+		public new Mesh setColor( Color color )
+		{
+			setColorForAllVerts( color );
+			return this;
+		}
+
+
+		/// <summary>
 		/// sets the vertex color for a single vert
 		/// </summary>
 		/// <returns>The color for vert.</returns>
@@ -213,7 +225,7 @@ namespace Nez
 
 			Core.graphicsDevice.DrawUserIndexedPrimitives( PrimitiveType.TriangleList, _verts, 0, _verts.Length, _triangles, 0, _primitiveCount );
 		}
-	
+
 		#endregion
 
 	}

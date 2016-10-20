@@ -16,6 +16,13 @@ namespace Nez
 			RotationDirty
 		}
 
+		public enum Component
+		{
+			Position,
+			Scale,
+			Rotation
+		}
+
 
 		#region properties and fields
 
@@ -65,7 +72,7 @@ namespace Nez
 					else
 					{
 						parent.updateTransform();
-						Vector2Ext.Transform( ref _localPosition, ref parent._worldTransform, out _position );
+						Vector2Ext.transform( ref _localPosition, ref parent._worldTransform, out _position );
 					}
 
 					_positionDirty = false;
@@ -128,7 +135,7 @@ namespace Nez
 				updateTransform();
 				return _localRotation;
 			}
-			set { setLocalRotation( value); }
+			set { setLocalRotation( value ); }
 		}
 
 
@@ -180,7 +187,7 @@ namespace Nez
 				updateTransform();
 				if( _worldInverseDirty )
 				{
-					Matrix2D.Invert( ref _worldTransform, out _worldInverseTransform );
+					Matrix2D.invert( ref _worldTransform, out _worldInverseTransform );
 					_worldInverseDirty = false;
 				}
 				return _worldInverseTransform;
@@ -206,12 +213,12 @@ namespace Nez
 				{
 					if( parent == null )
 					{
-						_worldToLocalTransform = Matrix2D.Identity;
+						_worldToLocalTransform = Matrix2D.identity;
 					}
 					else
 					{
 						parent.updateTransform();
-						Matrix2D.Invert( ref parent._worldTransform, out _worldToLocalTransform );
+						Matrix2D.invert( ref parent._worldTransform, out _worldToLocalTransform );
 					}
 
 					_worldToLocalDirty = false;
@@ -236,9 +243,9 @@ namespace Nez
 		Matrix2D _localTransform;
 
 		// value is automatically recomputed from the local and the parent matrices.
-		Matrix2D _worldTransform = Matrix2D.Identity;
-		Matrix2D _worldToLocalTransform = Matrix2D.Identity;
-		Matrix2D _worldInverseTransform = Matrix2D.Identity;
+		Matrix2D _worldTransform = Matrix2D.identity;
+		Matrix2D _worldToLocalTransform = Matrix2D.identity;
+		Matrix2D _worldInverseTransform = Matrix2D.identity;
 
 		Matrix2D _rotationMatrix;
 		Matrix2D _translationMatrix;
@@ -478,31 +485,31 @@ namespace Nez
 		{
 			if( hierarchyDirty != DirtyType.Clean )
 			{
-				if( parent != null && hierarchyDirty != DirtyType.Clean )
+				if( parent != null )
 					parent.updateTransform();
 
 				if( _localDirty )
 				{
 					if( _localPositionDirty )
 					{
-						Matrix2D.CreateTranslation( _localPosition.X, _localPosition.Y, out _translationMatrix );
+						Matrix2D.createTranslation( _localPosition.X, _localPosition.Y, out _translationMatrix );
 						_localPositionDirty = false;
 					}
 
 					if( _localRotationDirty )
 					{
-						Matrix2D.CreateRotationZ( _localRotation, out _rotationMatrix );
+						Matrix2D.createRotation( _localRotation, out _rotationMatrix );
 						_localRotationDirty = false;
 					}
 
 					if( _localScaleDirty )
 					{
-						Matrix2D.CreateScale( _localScale.X, _localScale.Y, out _scaleMatrix );
+						Matrix2D.createScale( _localScale.X, _localScale.Y, out _scaleMatrix );
 						_localScaleDirty = false;
 					}
 
-					Matrix2D.Multiply( ref _scaleMatrix, ref _rotationMatrix, out _localTransform );
-					Matrix2D.Multiply( ref _localTransform, ref _translationMatrix, out _localTransform );
+					Matrix2D.multiply( ref _scaleMatrix, ref _rotationMatrix, out _localTransform );
+					Matrix2D.multiply( ref _localTransform, ref _translationMatrix, out _localTransform );
 
 					if( parent == null )
 					{
@@ -516,7 +523,7 @@ namespace Nez
 
 				if( parent != null )
 				{
-					Matrix2D.Multiply( ref _localTransform, ref parent._worldTransform, out _worldTransform );
+					Matrix2D.multiply( ref _localTransform, ref parent._worldTransform, out _worldTransform );
 
 					_rotation = _localRotation + parent._rotation;
 					_scale = parent._scale * _localScale;
@@ -540,7 +547,18 @@ namespace Nez
 			{
 				hierarchyDirty |= dirtyFlagType;
 
-				entity.onTransformChanged();
+				switch( dirtyFlagType )
+				{
+					case DirtyType.PositionDirty:
+						entity.onTransformChanged( Component.Position );
+						break;
+					case DirtyType.RotationDirty:
+						entity.onTransformChanged( Component.Rotation );
+						break;
+					case DirtyType.ScaleDirty:
+						entity.onTransformChanged( Component.Scale );
+						break;
+				}
 
 				// dirty our children as well so they know of the changes
 				for( var i = 0; i < _children.Count; i++ )
@@ -558,9 +576,6 @@ namespace Nez
 			_scale = transform._scale;
 			_localScale = transform._localScale;
 
-//			hierarchyDirty |= DirtyType.PositionDirty;
-//			hierarchyDirty |= DirtyType.RotationDirty;
-//			hierarchyDirty |= DirtyType.ScaleDirty;
 			setDirty( DirtyType.PositionDirty );
 			setDirty( DirtyType.RotationDirty );
 			setDirty( DirtyType.ScaleDirty );

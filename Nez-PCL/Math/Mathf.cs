@@ -79,6 +79,11 @@ namespace Nez
 		}
 
 
+		/// <summary>
+		/// Calculates the integral part of a number cast to an int
+		/// </summary>
+		/// <returns>The to int.</returns>
+		/// <param name="f">F.</param>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static int truncateToInt( float f )
 		{
@@ -422,6 +427,19 @@ namespace Nez
 		public static float maxOf( float a, float b, float c, float d, float e )
 		{
 			return Math.Max( a, Math.Max( b, Math.Max( c, Math.Max( d, e ) ) ) );
+		}
+
+
+		/// <summary>
+		/// checks to see if value is between min/max inclusive of min/max
+		/// </summary>
+		/// <param name="value">Value.</param>
+		/// <param name="min">Minimum.</param>
+		/// <param name="max">Max.</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		public static bool between( float value, float min, float max )
+		{
+			return value >= min && value <= max;
 		}
 
 

@@ -801,13 +801,13 @@ namespace Nez
 		}
 
 
-		public override void onEntityTransformChanged()
+		public override void onEntityTransformChanged( Transform.Component comp )
 		{
 			// we dont care if the transform changed if we are in world space
 			if( useWorldSpace )
 				return;
 
-			_bounds.calculateBounds( entity.transform.position, _localOffset, _origin, entity.transform.scale, entity.transform.rotation, width, height );
+			_bounds.calculateBounds( entity.transform.position, _localOffset, Vector2.Zero, entity.transform.scale, entity.transform.rotation, width, height );
 		}
 
 
@@ -831,7 +831,7 @@ namespace Nez
 				_basicEffect.World = transform.localToWorldTransform;
 
 			var primitiveCount = _indices.length / 3;
-			Core.graphicsDevice.SamplerStates[0] = Core.defaultWrapedSamplerState;
+			Core.graphicsDevice.SamplerStates[0] = Core.defaultWrappedSamplerState;
 			Core.graphicsDevice.DrawUserIndexedPrimitives( PrimitiveType.TriangleList, _vertices.buffer, 0, _vertices.length, _indices.buffer, 0, primitiveCount );
 		}
 
@@ -841,8 +841,10 @@ namespace Nez
 			for( var i = 0; i < _vertices.length; i++ )
 			{
 				var v = _vertices[i];
-				Debug.drawPixel( v.Position.X, v.Position.Y, 4, Color.GhostWhite );
+				graphics.batcher.drawPixel( v.Position.X, v.Position.Y, Color.GhostWhite, 4 );
 			}
+
+			graphics.batcher.drawHollowRect( _bounds, DefaultColors.colliderBounds );
 		}
 
 		#endregion

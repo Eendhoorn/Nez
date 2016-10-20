@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Nez.PhysicsShapes;
-using System.Collections.Generic;
 
 
 namespace Nez
@@ -19,29 +18,13 @@ namespace Nez
 		public Shape shape;
 
 		/// <summary>
-		/// localOffset is added to entity.position to get the final position for the collider. This allows you to add multiple Colliders
-		/// to an Entity and position them separately.
+		/// localOffset is added to entity.position to get the final position for the collider geometry. This allows you to add multiple
+		/// Colliders to an Entity and position them separately and also lets you set the point of rotation/scale.
 		/// </summary>
 		public Vector2 localOffset
 		{
 			get { return _localOffset; }
 			set { setLocalOffset( value ); }
-		}
-
-		public Vector2 origin
-		{
-			get { return _origin; }
-			set { setOrigin( value ); }
-		}
-
-		/// <summary>
-		/// helper property for setting the origin in normalized fashion (0-1 for x and y)
-		/// </summary>
-		/// <value>The origin normalized.</value>
-		public Vector2 originNormalized
-		{
-			get { return new Vector2( _origin.X / bounds.width, _origin.Y / bounds.height ); }
-			set { origin = new Vector2( value.X * bounds.width, value.Y * bounds.height ); }
 		}
 
 		/// <summary>
@@ -50,7 +33,21 @@ namespace Nez
 		/// <value>The absolute position.</value>
 		public Vector2 absolutePosition
 		{
-			get { return entity.transform.position + _localOffset - _origin; }
+			get { return entity.transform.position + _localOffset; }
+		}
+
+		/// <summary>
+		/// wraps Transform.rotation and returns 0 if this Collider does not rotate with the Entity else it returns Transform.rotation
+		/// </summary>
+		/// <value>The rotation.</value>
+		public float rotation
+		{
+			get
+			{
+				if( shouldColliderScaleAndRotateWithTransform && entity != null )
+					return entity.transform.rotation;
+				return 0;
+			}
 		}
 
 		/// <summary>
@@ -68,14 +65,19 @@ namespace Nez
 		/// </summary>
 		public int collidesWithLayers = Physics.allLayers;
 
+		/// <summary>
+		/// if true, the Collider will scale and rotate following the Transform it is attached to
+		/// </summary>
+		public bool shouldColliderScaleAndRotateWithTransform = true;
+
 		public virtual RectangleF bounds
 		{
 			get
 			{
-				if( _areBoundsDirty )
+				if( _isPositionDirty || _isRotationDirty )
 				{
 					shape.recalculateBounds( this );
-					_areBoundsDirty = false;
+					_isPositionDirty = _isRotationDirty = false;
 				}
 
 				return shape.bounds;
@@ -89,7 +91,7 @@ namespace Nez
 		internal RectangleF registeredPhysicsBounds;
 
 		protected Vector2 _localOffset;
-		protected Vector2 _origin;
+		internal float _localOffsetLength;
 
 		/// <summary>
 		/// flag to keep track of if our Entity was added to a Scene
@@ -100,11 +102,8 @@ namespace Nez
 		/// flag to keep track of if we registered ourself with the Physics system
 		/// </summary>
 		protected bool _isColliderRegistered;
-		internal bool _areBoundsDirty = true;
-
-
-		public Collider()
-		{}
+		internal bool _isPositionDirty = true;
+		internal bool _isRotationDirty = true;
 
 
 		#region Fluent setters
@@ -121,7 +120,8 @@ namespace Nez
 			{
 				unregisterColliderWithPhysicsSystem();
 				_localOffset = offset;
-				_areBoundsDirty = true;
+				_localOffsetLength = _localOffset.Length();
+				_isPositionDirty = true;
 				registerColliderWithPhysicsSystem();
 			}
 			return this;
@@ -129,19 +129,14 @@ namespace Nez
 
 
 		/// <summary>
-		/// sets the origin for the Collider
+		/// if set to true, the Collider will scale and rotate following the Transform it is attached to
 		/// </summary>
-		/// <returns>The origin.</returns>
-		/// <param name="origin">Origin.</param>
-		public Collider setOrigin( Vector2 origin )
+		/// <returns>The should collider scale and rotate with transform.</returns>
+		/// <param name="shouldColliderScaleAndRotateWithTransform">If set to <c>true</c> should collider scale and rotate with transform.</param>
+		public Collider setShouldColliderScaleAndRotateWithTransform( bool shouldColliderScaleAndRotateWithTransform )
 		{
-			if( _origin != origin )
-			{
-				unregisterColliderWithPhysicsSystem();
-				_origin = origin;
-				_areBoundsDirty = true;
-				registerColliderWithPhysicsSystem();
-			}
+			this.shouldColliderScaleAndRotateWithTransform = shouldColliderScaleAndRotateWithTransform;
+			_isPositionDirty = _isRotationDirty = true;
 			return this;
 		}
 
@@ -166,30 +161,27 @@ namespace Nez
 				{
 					var renderableBounds = renderable.bounds;
 
-					var width = renderableBounds.width;
-					var height = renderableBounds.height;
+					// we need the size * inverse scale here because when we autosize the Collider it needs to be without a scaled Renderable
+					var width = renderableBounds.width / entity.transform.scale.X;
+					var height = renderableBounds.height / entity.transform.scale.Y;
 
 					// circle colliders need special care with the origin
 					if( this is CircleCollider )
 					{
 						var circle = this as CircleCollider;
 						circle.shape = new Circle( width * 0.5f );
-						circle.radius = width * 0.5f;
+						circle.radius = Math.Max( width, height ) * 0.5f;
 
-						// fetch the Renderable's center, transfer it to local coordinates and use that as the origin of our collider
-						var localCenter = renderableBounds.center - entity.transform.position;
-						origin = localCenter;
+						// fetch the Renderable's center, transfer it to local coordinates and use that as the localOffset of our collider
+						localOffset = renderableBounds.center - entity.transform.position;
 					}
 					else
 					{
-						var box = this as BoxCollider;
-						box.shape = new Box( width, height );
-						box.width = width;
-						box.height = height;
-						originNormalized = renderable.originNormalized;
-					}
+						shape = new Box( width, height );
 
-					shape.position = entity.transform.position;
+						// fetch the Renderable's center, transfer it to local coordinates and use that as the localOffset of our collider
+						localOffset = renderableBounds.center - entity.transform.position;
+					}
 				}
 			}
 			_isParentEntityAddedToScene = true;
@@ -207,9 +199,24 @@ namespace Nez
 		}
 
 
-		public virtual void onEntityTransformChanged()
+		public virtual void onEntityTransformChanged( Transform.Component comp )
 		{
-			_areBoundsDirty = true;
+			// set the appropriate dirty flags
+			switch( comp )
+			{
+				case Transform.Component.Position:
+					_isPositionDirty = true;
+					break;
+				case Transform.Component.Scale:
+					_isPositionDirty = true;
+					break;
+				case Transform.Component.Rotation:
+					_isRotationDirty = true;
+					break;
+			}
+
+			if( _isColliderRegistered )
+				Physics.updateCollider( this );
 		}
 
 
@@ -261,14 +268,18 @@ namespace Nez
 		/// <param name="result">Result.</param>
 		public bool collidesWith( Collider collider, out CollisionResult result )
 		{
-			return shape.collidesWithShape( collider.shape, out result );
+			if( shape.collidesWithShape( collider.shape, out result ) )
+			{
+				result.collider = collider;
+				return true;
+			}
+			return false;
 		}
 
 
 		/// <summary>
 		/// checks to see if this Collider with motion applied (delta movement vector) collides with collider. If it does, true will be
-		/// returned and result will be populated.
-		/// with collision data
+		/// returned and result will be populated with collision data.
 		/// </summary>
 		/// <returns><c>true</c>, if with was collidesed, <c>false</c> otherwise.</returns>
 		/// <param name="collider">Collider.</param>
@@ -278,12 +289,84 @@ namespace Nez
 		{
 			// alter the shapes position so that it is in the place it would be after movement so we can check for overlaps
 			var oldPosition = shape.position;
-			shape.position = absolutePosition + motion;
+			shape.position += motion;
 
 			var didCollide = shape.collidesWithShape( collider.shape, out result );
 			if( didCollide )
 				result.collider = collider;
-			
+
+			// return the shapes position to where it was before the check
+			shape.position = oldPosition;
+
+			return didCollide;
+		}
+
+
+		/// <summary>
+		/// checks to see if this Collider collides with any other Colliders in the Scene. The first Collider it intersects will have its collision
+		/// data returned in the CollisionResult.
+		/// </summary>
+		/// <returns><c>true</c>, if with was collidesed, <c>false</c> otherwise.</returns>
+		/// <param name="result">Result.</param>
+		public bool collidesWithAny( out CollisionResult result )
+		{
+			result = new CollisionResult();
+
+			// fetch anything that we might collide with at our new position
+			var neighbors = Physics.boxcastBroadphaseExcludingSelf( this, collidesWithLayers );
+
+			foreach( var neighbor in neighbors )
+			{
+				// skip triggers
+				if( neighbor.isTrigger )
+					continue;
+
+				if( collidesWith( neighbor, out result ) )
+					return true;
+			}
+
+			return false;
+		}
+
+
+		/// <summary>
+		/// checks to see if this Collider with motion applied (delta movement vector) collides with any collider. If it does, true will be
+		/// returned and result will be populated with collision data. Motion will be set to the maximum distance the Collider can travel
+		/// before colliding.
+		/// </summary>
+		/// <returns><c>true</c>, if with was collidesed, <c>false</c> otherwise.</returns>
+		/// <param name="motion">Motion.</param>
+		/// <param name="result">Result.</param>
+		public bool collidesWithAny( ref Vector2 motion, out CollisionResult result )
+		{
+			result = new CollisionResult();
+
+			// fetch anything that we might collide with at our new position
+			var colliderBounds = bounds;
+			colliderBounds.x += motion.X;
+			colliderBounds.y += motion.Y;
+			var neighbors = Physics.boxcastBroadphaseExcludingSelf( this, ref colliderBounds, collidesWithLayers );
+
+			// alter the shapes position so that it is in the place it would be after movement so we can check for overlaps
+			var oldPosition = shape.position;
+			shape.position += motion;
+
+			var didCollide = false;
+			foreach( var neighbor in neighbors )
+			{
+				// skip triggers
+				if( neighbor.isTrigger )
+					continue;
+
+				if( collidesWith( neighbor, out result ) )
+				{
+					// hit. back off our motion and our Shape.position
+					motion -= result.minimumTranslationVector;
+					shape.position -= result.minimumTranslationVector;
+					didCollide = true;
+				}
+			}
+
 			// return the shapes position to where it was before the check
 			shape.position = oldPosition;
 
@@ -294,9 +377,7 @@ namespace Nez
 
 
 		public virtual void debugRender( Graphics graphics )
-		{
-			graphics.batcher.drawHollowRect( bounds, Color.IndianRed );
-		}
+		{ }
 
 
 		public virtual Collider clone()

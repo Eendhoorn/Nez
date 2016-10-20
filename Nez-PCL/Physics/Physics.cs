@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Nez.Spatial;
-using Nez.PhysicsShapes;
 
 
 namespace Nez
@@ -192,7 +190,7 @@ namespace Nez
 
 
 		/// <summary>
-		/// check if aany collider falls within a circular area
+		/// check if any collider falls within a circular area. Returns the first Collider encountered.
 		/// </summary>
 		/// <returns>The circle.</returns>
 		/// <param name="center">Center.</param>

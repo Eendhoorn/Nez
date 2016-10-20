@@ -1,6 +1,5 @@
 ﻿using System;
 using Nez.Tiled;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
@@ -29,15 +28,18 @@ namespace Nez
 		}
 
 		public TiledTileLayer collisionLayer;
+
+		bool _shouldCreateColliders;
 		Collider[] _colliders;
 
 
-		public TiledMapComponent( TiledMap tiledmap, string collisionLayerName = null )
+		public TiledMapComponent( TiledMap tiledMap, string collisionLayerName = null, bool shouldCreateColliders = false )
 		{
-			this.tiledMap = tiledmap;
+			this.tiledMap = tiledMap;
+			_shouldCreateColliders = shouldCreateColliders;
 
 			if( collisionLayerName != null )
-				collisionLayer = tiledmap.getLayer<TiledTileLayer>( collisionLayerName );
+				collisionLayer = tiledMap.getLayer<TiledTileLayer>( collisionLayerName );
 		}
 
 
@@ -116,12 +118,14 @@ namespace Nez
 
 		#region Component overrides
 
-		public override void onEntityTransformChanged()
+		public override void onEntityTransformChanged( Transform.Component comp )
 		{
-            base.onEntityTransformChanged(); //not sure why this was missing, but the bounds weren't recalculated when changing renderLayers without this!
-
-			removeColliders();
-			addColliders();
+			// we only deal with positional changes here. TiledMaps cant be scaled.
+			if( _shouldCreateColliders && comp == Transform.Component.Position )
+			{
+				removeColliders();
+				addColliders();
+			}
 		}
 
 
@@ -179,7 +183,7 @@ namespace Nez
 
 		public void addColliders()
 		{
-			if( collisionLayer == null )
+			if( collisionLayer == null || !_shouldCreateColliders )
 				return;
 
 			// fetch the collision layer and its rects for collision

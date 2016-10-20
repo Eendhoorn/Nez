@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
@@ -177,10 +176,10 @@ namespace Nez
 		}
 
 
-		internal void onEntityTransformChanged()
+		internal void onEntityTransformChanged( Transform.Component comp )
 		{
 			for( var i = 0; i < _colliders.Count; i++ )
-				_colliders[i].onEntityTransformChanged();
+				_colliders[i].onEntityTransformChanged( comp );
 		}
 
 

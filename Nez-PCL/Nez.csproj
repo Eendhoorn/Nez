@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,68 +30,7 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Debug\" />
-    <Folder Include="ECS\" />
-    <Folder Include="Graphics\" />
-    <Folder Include="Input\" />
-    <Folder Include="Math\" />
-    <Folder Include="Physics\" />
-    <Folder Include="Stuff\" />
-    <Folder Include="Utils\" />
-    <Folder Include="PipelineRuntime\" />
-    <Folder Include="Utils\DebugConsole\" />
-    <Folder Include="Utils\Tweens\" />
-    <Folder Include="Utils\Tweens\Easing\" />
-    <Folder Include="Utils\Tweens\Interfaces\" />
-    <Folder Include="Utils\Timers\" />
-    <Folder Include="Utils\Coroutines\" />
-    <Folder Include="ECS\Components\Renderables\Sprites\" />
-    <Folder Include="Graphics\Textures\" />
-    <Folder Include="PipelineRuntime\TextureAtlas\" />
-    <Folder Include="Physics\QuadTree\" />
-    <Folder Include="ECS\Components\Renderables\Particles\" />
-    <Folder Include="PipelineRuntime\ParticleDesigner\" />
-    <Folder Include="Utils\Analysis\" />
-    <Folder Include="ECS\Systems\" />
-    <Folder Include="Physics\Shapes\" />
-    <Folder Include="Graphics\PostProcessing\PostProcessors\" />
-    <Folder Include="Graphics\Effects\" />
-    <Folder Include="Graphics\Transitions\" />
-    <Folder Include="PipelineRuntime\UISkin\" />
-    <Folder Include="Input\Virtual\" />
-    <Folder Include="Graphics\Batcher\" />
-    <Folder Include="Graphics\DeferredLighting\" />
-    <Folder Include="AI\" />
-    <Folder Include="AI\FSM\" />
-    <Folder Include="AI\BehaviorTree\" />
-    <Folder Include="AI\BehaviorTree\Actions\" />
-    <Folder Include="AI\BehaviorTree\Composites\" />
-    <Folder Include="AI\BehaviorTree\Conditionals\" />
-    <Folder Include="AI\BehaviorTree\Decorators\" />
-    <Folder Include="AI\UtilityAI\" />
-    <Folder Include="AI\UtilityAI\Actions\" />
-    <Folder Include="AI\UtilityAI\Reasoners\" />
-    <Folder Include="AI\UtilityAI\Considerations\" />
-    <Folder Include="AI\UtilityAI\Considerations\Appraisals\" />
-    <Folder Include="AI\GOAP\" />
-    <Folder Include="Graphics\Renderers\Reflections\" />
-    <Folder Include="Utils\Fonts\" />
-    <Folder Include="Utils\Collections\" />
-    <Folder Include="AI\Pathfinding\" />
-    <Folder Include="AI\Pathfinding\BreadthFirst\" />
-    <Folder Include="AI\Pathfinding\AStar\" />
-    <Folder Include="Utils\Extensions\" />
-    <Folder Include="Debug\Inspector\" />
-    <Folder Include="Debug\Inspector\Attributes\" />
-    <Folder Include="Debug\Inspector\Inspectors\" />
-    <Folder Include="UI\Utils\" />
-    <Folder Include="Content\" />
-    <Folder Include="Utils\Audio\" />
-    <Folder Include="Graphics\Materials\" />
-    <Folder Include="AI\Pathfinding\Dijkstra\" />
-    <Folder Include="ECS\Components\Renderables\3D\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="ECS\Camera.cs" />
@@ -122,7 +61,6 @@
     <Compile Include="Physics\Physics.cs" />
     <Compile Include="Physics\Ray2D.cs" />
     <Compile Include="Physics\SpatialHash.cs" />
-    <Compile Include="Stuff\IMGUI\IMGUI.cs" />
     <Compile Include="Utils\Emitter.cs" />
     <Compile Include="Utils\Time.cs" />
     <Compile Include="Core.cs" />
@@ -207,7 +145,6 @@
     <Compile Include="ECS\Systems\ProcessingSystem.cs" />
     <Compile Include="Physics\Shapes\Shape.cs" />
     <Compile Include="Physics\Shapes\Polygon.cs" />
-    <Compile Include="Physics\Shapes\ShapeCollisions.cs" />
     <Compile Include="Physics\Shapes\Circle.cs" />
     <Compile Include="Physics\Shapes\Box.cs" />
     <Compile Include="Debug\Assert.cs" />
@@ -508,13 +445,64 @@
     <Compile Include="ECS\Components\Renderables\LineRenderer.cs" />
     <Compile Include="Utils\Extensions\Vector3Ext.cs" />
     <Compile Include="ECS\Components\Renderables\PolygonMesh.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>MonoGamePCL\MonoGame.Framework.dll</HintPath>
-    </Reference>
+    <Compile Include="Physics\Verlet\Composites\Ball.cs" />
+    <Compile Include="Physics\Verlet\Composites\Cloth.cs" />
+    <Compile Include="Physics\Verlet\Composites\Composite.cs" />
+    <Compile Include="Physics\Verlet\Composites\LineSegments.cs" />
+    <Compile Include="Physics\Verlet\Composites\Tire.cs" />
+    <Compile Include="Physics\Verlet\Composites\Tree.cs" />
+    <Compile Include="Physics\Verlet\Constraints\AngleConstraint.cs" />
+    <Compile Include="Physics\Verlet\Constraints\Constraint.cs" />
+    <Compile Include="Physics\Verlet\Constraints\DistanceConstraint.cs" />
+    <Compile Include="Physics\Verlet\Particle.cs" />
+    <Compile Include="Physics\Verlet\World.cs" />
+    <Compile Include="Physics\Shapes\ShapeCollisions\ShapeCollisionsPolygon.cs" />
+    <Compile Include="Physics\Shapes\ShapeCollisions\ShapeCollisionsBox.cs" />
+    <Compile Include="Physics\Shapes\ShapeCollisions\ShapeCollisionsCircle.cs" />
+    <Compile Include="Physics\Shapes\ShapeCollisions\ShapeCollisionsLine.cs" />
+    <Compile Include="Physics\Shapes\ShapeCollisions\ShapeCollisionsPoint.cs" />
+    <Compile Include="Debug\DefaultColors.cs" />
+    <Compile Include="UI\IMGUI.cs" />
+    <Compile Include="Physics\Verlet\Composites\Box.cs" />
+    <Compile Include="Physics\Verlet\Composites\Ragdoll.cs" />
+    <Compile Include="Utils\Tweens\RenderableColorTween.cs" />
+    <Compile Include="Math\Bezier.cs" />
+    <Compile Include="Math\BezierSpline.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\FauxGraphicsPath.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\ISvgPathBuilder.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPath.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPathParser.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPathSegments.cs" />
+    <Compile Include="Graphics\SVG\Shapes\Paths\SvgReflectionPathBuilder.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgCircle.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgEllipse.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgImage.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgLine.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgPolygon.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgPolyline.cs" />
+    <Compile Include="Graphics\SVG\Shapes\SvgRectangle.cs" />
+    <Compile Include="Graphics\SVG\SvgDebugComponent.cs" />
+    <Compile Include="Graphics\SVG\SvgDocument.cs" />
+    <Compile Include="Graphics\SVG\SvgElement.cs" />
+    <Compile Include="Graphics\SVG\SvgGroup.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgMatrix.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgRotate.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgScale.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgShear.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgSkew.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgTransform.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgTransformConverter.cs" />
+    <Compile Include="Graphics\SVG\Transforms\SvgTranslate.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\NezDefaultBMFont.xnb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Graphics\SVG\Shapes\Paths\SvgPathBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
