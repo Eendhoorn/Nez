@@ -12,7 +12,11 @@ namespace Nez.Tiled
 		public readonly TiledMap tiledMap;
 		public int width;
 		public int height;
-		public readonly TiledTile[] tiles;
+		protected TiledTile[] _tiles;
+        public TiledTile[] tiles
+        {
+            get { return _tiles; }
+        }
 		public Color color = Color.White;
 
 
@@ -25,7 +29,7 @@ namespace Nez.Tiled
 		{
 			this.width = width;
 			this.height = height;
-			this.tiles = tiles;
+			this._tiles = tiles;
 
 			tiledMap = map;
 			tiles = populateTilePositions();
@@ -40,25 +44,62 @@ namespace Nez.Tiled
 		/// loops through the tiles and sets each tiles x/y value
 		/// </summary>
 		/// <returns>The tile positions.</returns>
-		TiledTile[] populateTilePositions()
+		protected TiledTile[] populateTilePositions()
 		{
 			for( var y = 0; y < height; y++ )
 			{
 				for( var x = 0; x < width; x++ )
 				{
-					if( tiles[x + y * width] != null )
+					if( _tiles[x + y * width] != null )
 					{
-						tiles[x + y * width].x = x;
-						tiles[x + y * width].y = y;
+						_tiles[x + y * width].x = x;
+						_tiles[x + y * width].y = y;
 					}
 				}
 			}
 
-			return tiles;
+			return _tiles;
 		}
 
+        /// <summary>
+        /// Resize the layer
+        /// </summary>
+        /// <param name="newWidth"></param>
+        /// <param name="newHeight"></param>
+        public virtual void Resize( int newWidth, int newHeight )
+        {
+            TiledTile[] prevTiles = _tiles;
 
-		public override void draw( Batcher batcher, Vector2 position, float layerDepth, RectangleF cameraClipBounds )
+            int prevWidth = width;
+            int prevHeight = height;
+
+            width = newWidth;
+            height = newHeight;
+
+            _tiles = new TiledTile[ newWidth * newHeight ];
+            populateTilePositions();
+
+            int w = prevWidth > width ? width : prevWidth;
+            int h = prevHeight > height ? width : prevHeight;
+
+            for ( int x = 0; x < w; x++ )
+            {
+                for ( int y = 0; y < h; y++ )
+                {
+                    int newIndex = y * width + x;
+                    int prevIndex = y * prevWidth + x;
+
+                    //set existing tiles
+                    if ( prevIndex < prevTiles.Length && newIndex < _tiles.Length )
+                    {
+                        _tiles[ newIndex ] = prevTiles[ prevIndex ];
+                    }
+                }
+            }
+        }
+
+
+        public override void draw( Batcher batcher, Vector2 position, float layerDepth, RectangleF cameraClipBounds )
 		{
 			// offset it by the entity position since the tilemap will always expect positions in its own coordinate space
 			cameraClipBounds.location -= position;
@@ -161,9 +202,9 @@ namespace Nez.Tiled
 		/// <returns>The tile.</returns>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public TiledTile getTile( int x, int y )
+		public virtual TiledTile getTile( int x, int y )
 		{
-			return tiles[x + y * width];
+			return _tiles[x + y * width];
 		}
 
 
@@ -174,9 +215,9 @@ namespace Nez.Tiled
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T getTile<T>( int x, int y ) where T : TiledTile
+		public virtual T getTile<T>( int x, int y ) where T : TiledTile
 		{
-			return tiles[x + y * width] as T;
+			return _tiles[x + y * width] as T;
 		}
 
 
@@ -187,7 +228,7 @@ namespace Nez.Tiled
 		/// <param name="tile">Tile.</param>
 		public virtual TiledTile setTile( TiledTile tile )
 		{
-			tiles[tile.x + tile.y * width] = tile;
+			_tiles[tile.x + tile.y * width] = tile;
 			tile.tileset = tiledMap.getTilesetForTileId( tile.id );
 
 			return tile;
@@ -201,7 +242,7 @@ namespace Nez.Tiled
 		/// <param name="y">The y coordinate.</param>
 		public virtual void removeTile( int x, int y )
 		{
-			tiles[x + y * width] = null;
+			_tiles[x + y * width] = null;
 		}
 
 		#endregion
@@ -238,7 +279,7 @@ namespace Nez.Tiled
 		/// <param name="layer">Layer.</param>
 		public List<Rectangle> getCollisionRectangles()
 		{
-			var checkedIndexes = new bool?[tiles.Length];
+			var checkedIndexes = new bool?[_tiles.Length];
 			var rectangles = new List<Rectangle>();
 			var startCol = -1;
 			var index = -1;
@@ -397,7 +438,7 @@ namespace Nez.Tiled
 			var tDeltaY = stepY / direction.Y;
 
 			// start walking and returning the intersecting tiles
-			var tile = tiles[intX + intY * width];
+			var tile = _tiles[intX + intY * width];
 			if( tile != null )
 				return tile;
 
@@ -414,7 +455,7 @@ namespace Nez.Tiled
 					tMaxY += tDeltaY;
 				}
 
-				tile = tiles[intX + intY * width];
+				tile = _tiles[intX + intY * width];
 				if( tile != null )
 					return tile;
 			}

@@ -11,9 +11,11 @@ namespace Nez.Tiled
 		#region Fields and Properties
 
 		public readonly int firstGid;
-		public readonly int width;
-		public readonly int height;
-		public readonly int tileWidth;
+		public int _width;
+		public int _height;
+        public int width { get { return _width; } }
+        public int height { get { return _height; } }
+        public readonly int tileWidth;
 		public readonly int tileHeight;
 		public Color? backgroundColor;
 		public TiledRenderOrder renderOrder;
@@ -24,9 +26,9 @@ namespace Nez.Tiled
 		public List<TiledObjectGroup> objectGroups = new List<TiledObjectGroup>();
 		public List<TiledTileset> tilesets = new List<TiledTileset>();
 
-		public int widthInPixels { get { return width * tileWidth; } }
+		public int widthInPixels { get { return _width * tileWidth; } }
 
-		public int heightInPixels { get { return height * tileHeight; } }
+		public int heightInPixels { get { return _height * tileHeight; } }
 
 		public int largestTileWidth;
 		public int largestTileHeight;
@@ -46,8 +48,8 @@ namespace Nez.Tiled
 			TiledMapOrientation orientation = TiledMapOrientation.Orthogonal )
 		{
 			this.firstGid = firstGid;
-			this.width = width;
-			this.height = height;
+			this._width = width;
+			this._height = height;
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
 			this.orientation = orientation;
@@ -74,6 +76,17 @@ namespace Nez.Tiled
 
 			return tileset;
 		}
+
+        public void Resize( int newWidth, int newHeight )
+        {
+            this._width = newWidth;
+            this._height = newHeight;
+
+            foreach ( TiledTileLayer layer in layers )
+            {
+                layer.Resize( newWidth, newHeight );
+            }
+        }
 
 
 		public TiledLayer createTileLayer( string name, int width, int height )

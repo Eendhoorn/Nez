@@ -20,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -30,7 +31,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="ECS\Camera.cs" />
@@ -464,31 +464,6 @@
     <Compile Include="Utils\Tweens\RenderableColorTween.cs" />
     <Compile Include="Math\Bezier.cs" />
     <Compile Include="Math\BezierSpline.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\FauxGraphicsPath.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\ISvgPathBuilder.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPath.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPathParser.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\SvgPathSegments.cs" />
-    <Compile Include="Graphics\SVG\Shapes\Paths\SvgReflectionPathBuilder.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgCircle.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgEllipse.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgImage.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgLine.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgPolygon.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgPolyline.cs" />
-    <Compile Include="Graphics\SVG\Shapes\SvgRectangle.cs" />
-    <Compile Include="Graphics\SVG\SvgDebugComponent.cs" />
-    <Compile Include="Graphics\SVG\SvgDocument.cs" />
-    <Compile Include="Graphics\SVG\SvgElement.cs" />
-    <Compile Include="Graphics\SVG\SvgGroup.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgMatrix.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgRotate.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgScale.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgShear.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgSkew.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgTransform.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgTransformConverter.cs" />
-    <Compile Include="Graphics\SVG\Transforms\SvgTranslate.cs" />
     <Compile Include="Graphics\PostProcessing\PostProcessors\GaussianBlurPostProcessor.cs" />
     <Compile Include="Graphics\Effects\GaussianBlurEffect.cs" />
     <Compile Include="ECS\Components\Renderables\IRenderable.cs" />
@@ -510,11 +485,9 @@
     <EmbeddedResource Include="Content\NezDefaultBMFont.xnb" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Graphics\SVG\Shapes\Paths\SvgPathBuilder.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
+      <HintPath>MonoGamePCL\MonoGame.Framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 </Project>
