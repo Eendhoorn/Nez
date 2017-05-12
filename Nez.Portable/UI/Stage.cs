@@ -190,7 +190,7 @@ namespace Nez.UI
 				leftMouseButtonDown = touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Pressed || touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Moved;
 				leftMouseButtonPressed = touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Pressed;
 				leftMouseButtonReleased = touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Released || touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Invalid;
-				currentMousePosition = touch.Position;
+				currentMousePosition = Input.scaledPosition( touch.Position );
 
 				didMouseMove = touch.State == Microsoft.Xna.Framework.Input.Touch.TouchLocationState.Moved;
 				if( didMouseMove )
@@ -198,7 +198,7 @@ namespace Nez.UI
 			}
 			#endif
 
-			var mousePos = screenToStageCoordinates( currentMousePosition );
+			var mousePos = screenToStageCoordinates( ( currentMousePosition ) );
 
 			// mouse moved and released events are only sent to inputFocusListeners
 			if( ( leftMouseButtonDown && !leftMouseButtonPressed ) || leftMouseButtonReleased )

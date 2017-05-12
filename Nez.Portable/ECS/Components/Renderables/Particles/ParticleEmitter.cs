@@ -43,10 +43,11 @@ namespace Nez.Particles
 		/// to false and then any live particles are allowed to finish their lifecycle.
 		/// </summary>
 		bool _emitting;
-		List<Particle> _particles;
+		protected List<Particle> _particles;
 		bool _playOnAwake;
-		ParticleEmitterConfig _emitterConfig;
+		public ParticleEmitterConfig _emitterConfig;
 
+        public RectangleF particleBounds = RectangleF.maxRect;
 
 		public ParticleEmitter( ParticleEmitterConfig emitterConfig, bool playOnAwake = true )
 		{
@@ -135,18 +136,19 @@ namespace Nez.Particles
 			{
 				// get the current particle and update it
 				var currentParticle = _particles[i];
+                var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
+                pos += currentParticle.position;
 
-				// if update returns true that means the particle is done
-				if( currentParticle.update( _emitterConfig, ref collisionConfig, rootPosition ) )
-				{
+                // if update returns true that means the particle is done
+                if ( currentParticle.update( _emitterConfig, ref collisionConfig, rootPosition ) ||
+                     (particleBounds != RectangleF.maxRect && particleBounds.contains( pos ) == false ) )
+                {
 					Pool<Particle>.free( currentParticle );
 					_particles.RemoveAt( i );
 				}
 				else
 				{
 					// particle is good. collect min/max positions for the bounds
-					var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
-					pos += currentParticle.position;
 					Vector2.Min( ref min, ref pos, out min );
 					Vector2.Max( ref max, ref pos, out max );
 					maxParticleSize = System.Math.Max( maxParticleSize, currentParticle.particleSize );
@@ -182,11 +184,12 @@ namespace Nez.Particles
 			{
 				var currentParticle = _particles[i];
 				var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
+                Vector2 parallax = (_emitterConfig.parallax + currentParticle.parallaxVariance ) * camera.position;
 
 				if( _emitterConfig.subtexture == null )
-					graphics.batcher.draw( graphics.pixelTexture, pos + currentParticle.position, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * 0.5f, SpriteEffects.None, layerDepth );
+					graphics.batcher.draw( graphics.pixelTexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * 0.5f, SpriteEffects.None, layerDepth );
 				else
-					graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
+					graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
 			}
 		}
 

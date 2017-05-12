@@ -402,10 +402,15 @@ namespace Nez
 		/// <returns><c>true</c> if other <see cref="RectangleF"/> intersects with this rectangle; <c>false</c> otherwise.</returns>
 		public bool intersects( RectangleF value )
 		{
-			return value.left < right &&
+            /*return value.left < right &&
 			left < value.right &&
 			value.top < bottom &&
-			top < value.bottom;
+			top < value.bottom;*/
+
+            return value.x < x + width &&
+                x < value.x + value.width &&
+                value.y < y + height &&
+                y < value.y + value.height;
 		}
 
 

@@ -42,9 +42,9 @@ namespace Nez.Particles
 		/// </summary>
 		bool _collided;
 		Vector2 _velocity;
+        internal Vector2 parallaxVariance = Vector2.Zero;
 
-
-		public void initialize( ParticleEmitterConfig emitterConfig, Vector2 spawnPosition )
+        public void initialize( ParticleEmitterConfig emitterConfig, Vector2 spawnPosition )
 		{
 			_collided = false;
 
@@ -54,7 +54,10 @@ namespace Nez.Particles
 			position.X = emitterConfig.sourcePositionVariance.X * Random.minusOneToOne();
 			position.Y = emitterConfig.sourcePositionVariance.Y * Random.minusOneToOne();
 
-			this.spawnPosition = spawnPosition;
+            parallaxVariance = ( Random.minusOneToOne() * emitterConfig.parallaxVariance );
+
+
+            this.spawnPosition = spawnPosition;
 
 			// init the direction of the   The newAngle is calculated using the angle passed in and the
 			// angle variance.

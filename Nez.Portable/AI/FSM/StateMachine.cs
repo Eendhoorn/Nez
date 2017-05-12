@@ -37,6 +37,17 @@ namespace Nez.AI.FSM
 			_states[state.GetType()] = state;
 		}
 
+        public State<T>[] getStates()
+        {
+            State<T>[] states = new State<T>[ _states.Count ];
+            for ( int i = 0; i < _states.Count; i++ )
+            {
+                _states.Values.CopyTo( states, i );
+            }
+
+            return states;
+        }
+
 
 		/// <summary>
 		/// ticks the state machine with the provided delta time

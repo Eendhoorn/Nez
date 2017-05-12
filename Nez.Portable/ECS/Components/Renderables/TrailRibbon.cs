@@ -202,11 +202,16 @@ namespace Nez
 		public override void render( Graphics graphics, Camera camera )
 		{
 			calculateVertices();
-			_basicEffect.Projection = camera.projectionMatrix;
-			_basicEffect.View = camera.transformMatrix;
-			_basicEffect.CurrentTechnique.Passes[0].Apply();
 
-			Core.graphicsDevice.DrawUserPrimitives( PrimitiveType.TriangleStrip, _vertices, 0, _ribbonLength * 2 + 1 );
+            graphics.batcher.flushBatch();
+            Core.graphicsDevice.BlendState = BlendState.Opaque;
+            Core.graphicsDevice.DepthStencilState = DepthStencilState.Default; 
+
+            _basicEffect.Projection = camera.projectionMatrix;
+			_basicEffect.View = camera.transformMatrix;
+			_basicEffect.CurrentTechnique.Passes[0].Apply();         
+
+            Core.graphicsDevice.DrawUserPrimitives( PrimitiveType.TriangleStrip, _vertices, 0, _ribbonLength * 2 + 1 );
 		}
 
 		#endregion

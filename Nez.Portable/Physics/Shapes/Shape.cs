@@ -23,7 +23,7 @@ namespace Nez.PhysicsShapes
 		internal RectangleF bounds;
 
 
-		internal abstract void recalculateBounds( Collider collider );
+		public abstract void recalculateBounds( Collider collider );
 
 		public abstract bool overlaps( Shape other );
 

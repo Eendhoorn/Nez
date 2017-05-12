@@ -71,6 +71,22 @@ namespace Nez.PhysicsShapes
 		public Polygon( int vertCount, float radius ) : this( buildSymmetricalPolygon( vertCount, radius ) )
 		{}
 
+        /// <summary>
+        /// Sets new points for the polygon and optionally recalculates the bounds determined by a supplied collider
+        /// </summary>
+        /// <param name="points">new points array</param>
+        /// <param name="collider">collider to determine bounds by</param>
+        /// <returns></returns>
+        public Vector2[] SetPoints( Vector2[] points, Collider collider = null )
+        {
+            this.points = _originalPoints = points;
+            if ( collider != null )
+            {
+                this.recalculateBounds( collider );
+                Physics.updateCollider( collider );
+            }
+            return points;
+        }
 
 		/// <summary>
 		/// recalculates the Polygon centers. This must be called if the points are changed!
@@ -251,7 +267,7 @@ namespace Nez.PhysicsShapes
 
 		#region Shape abstract methods
 
-		internal override void recalculateBounds( Collider collider )
+		public override void recalculateBounds( Collider collider )
 		{
 			// if we dont have rotation or dont care about TRS we use localOffset as the center so we'll start with that
 			center = collider.localOffset;

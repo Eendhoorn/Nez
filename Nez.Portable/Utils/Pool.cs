@@ -33,7 +33,7 @@ namespace Nez
 		/// <param name="cacheCount">Cache count.</param>
 		public static void trimCache( int cacheCount )
 		{
-			while( cacheCount > _objectQueue.Count )
+			while( cacheCount > _objectQueue.Count && _objectQueue.Count > 0)
 				_objectQueue.Dequeue();
 		}
 

@@ -33,6 +33,7 @@ namespace Nez
 
 			if( collisionLayerName != null )
 				collisionLayer = tiledMap.getLayer<TiledTileLayer>( collisionLayerName );
+
 		}
 
 
@@ -59,10 +60,21 @@ namespace Nez
 				layerIndicesToRender[i] = tiledMap.getLayerIndex( layerNames[i] );
 		}
 
+        /// <summary>
+        /// Resizes all layers to the specified width and height
+        /// </summary>
+        /// <param name="newWidth"></param>
+        /// <param name="newHeight"></param>
+        public void Resize( int newWidth, int newHeight )
+        {
+            tiledMap.Resize( newWidth, newHeight );
+            _areBoundsDirty = true;
+        }
 
-		#region TiledMap queries
 
-		public int getRowAtWorldPosition( float yPos )
+        #region TiledMap queries
+
+        public int getRowAtWorldPosition( float yPos )
 		{
 			yPos -= entity.transform.position.Y + _localOffset.Y;
 			return tiledMap.worldToTilePositionY( yPos );

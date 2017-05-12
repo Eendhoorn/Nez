@@ -459,9 +459,9 @@ namespace Nez
 		/// </summary>
 		/// <returns>The component.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T getOrCreateComponent<T>() where T : Component, new()
+		public T getOrCreateComponent<T>( bool onlyReturnInitializedComponents = true) where T : Component, new()
 		{
-			var comp = components.getComponent<T>( true );
+			var comp = components.getComponent<T>( onlyReturnInitializedComponents );
 			if( comp == null )
 				comp = addComponent<T>();
 

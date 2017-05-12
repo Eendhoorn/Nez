@@ -77,6 +77,11 @@ namespace Nez.Tiled
 			return tileset;
 		}
 
+        /// <summary>
+        /// resizes all layers to the specified size
+        /// </summary>
+        /// <param name="newWidth"></param>
+        /// <param name="newHeight"></param>
         public void Resize( int newWidth, int newHeight )
         {
             this._width = newWidth;
@@ -86,6 +91,7 @@ namespace Nez.Tiled
             {
                 layer.Resize( newWidth, newHeight );
             }
+
         }
 
 
@@ -280,7 +286,7 @@ namespace Nez.Tiled
 		/// <summary>
 		/// handles calling update on all animated tiles
 		/// </summary>
-		public void update()
+		public virtual void update()
 		{
 			for( var i = 0; i < _animatedTiles.Count; i++ )
 				_animatedTiles[i].update();

@@ -52,13 +52,16 @@ namespace Nez.Particles
 		public float minRadius;
 		// Variance of the minRadius
 		public float minRadiusVariance;
-		// Numeber of degress to rotate a particle around the source pos per second
+		// Number of degress to rotate a particle around the source pos per second
 		public float rotatePerSecond;
 		// Variance in degrees for rotatePerSecond
 		public float rotatePerSecondVariance;
 
+        // How much a particle's position should be offset by the camera, to apply a parallax effect
+        public Vector2 parallax = Vector2.Zero;
+        public Vector2 parallaxVariance = Vector2.Zero;
 
-		public ParticleEmitterConfig()
+        public ParticleEmitterConfig()
 		{}
 
 	}

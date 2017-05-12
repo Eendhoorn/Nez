@@ -33,7 +33,7 @@ namespace Nez.PhysicsShapes
 		}
 
 
-		internal override void recalculateBounds( Collider collider )
+		public override void recalculateBounds( Collider collider )
 		{
 			// if we dont have rotation or dont care about TRS we use localOffset as the center so we'll start with that
 			center = collider.localOffset;
