@@ -37,12 +37,16 @@ namespace Nez.Particles
 		// stored at particle creation time and used for lerping the color
 		float _particleLifetime;
 
+        int currentFrame = 0;
+
 		/// <summary>
 		/// flag indicating if this particle has already collided so that we know not to move it in the normal fashion
 		/// </summary>
 		bool _collided;
 		Vector2 _velocity;
         internal Vector2 parallaxVariance = Vector2.Zero;
+
+        internal int animationFrame = 0;
 
         public void initialize( ParticleEmitterConfig emitterConfig, Vector2 spawnPosition )
 		{
@@ -191,6 +195,8 @@ namespace Nez.Particles
 				// update the rotation of the particle
 				rotation += _rotationDelta * Time.deltaTime;
 
+                //update animation
+                
 
 				if( collisionConfig.enabled )
 				{

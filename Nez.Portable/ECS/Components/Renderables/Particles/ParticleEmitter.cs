@@ -80,6 +80,9 @@ namespace Nez.Particles
 			blendState.ColorDestinationBlend = blendState.AlphaDestinationBlend = _emitterConfig.blendFuncDestination;
 
 			material = new Material( blendState );
+
+            //prepare animation if we have one
+            if( _emitterConfig.animation != null ) _emitterConfig.animation.prepareForUse();
 		}
 
 
@@ -188,8 +191,10 @@ namespace Nez.Particles
 
 				if( _emitterConfig.subtexture == null )
 					graphics.batcher.draw( graphics.pixelTexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * 0.5f, SpriteEffects.None, layerDepth );
-				else
-					graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
+				else if( _emitterConfig.animation != null )
+                    graphics.batcher.draw( _emitterConfig.animation.frames[ currentParticle.animationFrame], pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
+                else
+                    graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
 			}
 		}
 

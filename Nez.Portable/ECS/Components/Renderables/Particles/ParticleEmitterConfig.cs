@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez.Textures;
-
+using Nez.Sprites;
 
 namespace Nez.Particles
 {
@@ -40,7 +40,7 @@ namespace Nez.Particles
 		public float rotationStart, rotationStartVariance;
 		public float rotationEnd, rotationEndVariance;
 		public float emissionRate;
-
+        public SpriteAnimation animation;
 
 		/////// Particle ivars only used when a maxRadius value is provided.  These values are used for
 		/////// the special purpose of creating the spinning portal emitter
