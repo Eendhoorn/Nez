@@ -60,6 +60,7 @@ namespace Nez.Particles
         // How much a particle's position should be offset by the camera, to apply a parallax effect
         public Vector2 parallax = Vector2.Zero;
         public Vector2 parallaxVariance = Vector2.Zero;
+        public bool animationByLifetime;
 
         public ParticleEmitterConfig()
 		{}

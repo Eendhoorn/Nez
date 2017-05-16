@@ -168,7 +168,7 @@ namespace Nez.Sprites
 
 			// time goes backwards when we are reversing a ping-pong loop
 			if( _isLoopingBackOnPingPong )
-				elapsedTime = _currentAnimation.iterationDuration - elapsedTime;
+                elapsedTime = _currentAnimation.iterationDuration - elapsedTime;
 
 
 			// fetch our desired frame

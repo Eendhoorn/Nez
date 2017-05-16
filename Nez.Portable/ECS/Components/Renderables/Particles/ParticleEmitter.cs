@@ -20,10 +20,11 @@ namespace Nez.Particles
 		/// </summary>
 		public bool simulateInWorldSpace { set { _emitterConfig.simulateInWorldSpace = value; } }
 
-		/// <summary>
-		/// config object with various properties to deal with particle collisions
-		/// </summary>
-		public ParticleCollisionConfig collisionConfig;
+  
+        /// <summary>
+        /// config object with various properties to deal with particle collisions
+        /// </summary>
+        public ParticleCollisionConfig collisionConfig;
 
 		/// <summary>
 		/// keeps track of how many particles should be emitted
@@ -43,7 +44,12 @@ namespace Nez.Particles
 		/// to false and then any live particles are allowed to finish their lifecycle.
 		/// </summary>
 		bool _emitting;
-		protected List<Particle> _particles;
+        public bool emitting
+        {
+            get{ return _emitting;}
+            set{ _emitting = value;}
+        }
+        protected List<Particle> _particles;
 		bool _playOnAwake;
 		public ParticleEmitterConfig _emitterConfig;
 
@@ -74,12 +80,15 @@ namespace Nez.Particles
 		/// </summary>
 		void init()
 		{
-			// prep our custom BlendState and set the Material with it
-			var blendState = new BlendState();
-			blendState.ColorSourceBlend = blendState.AlphaSourceBlend = _emitterConfig.blendFuncSource;
-			blendState.ColorDestinationBlend = blendState.AlphaDestinationBlend = _emitterConfig.blendFuncDestination;
+            // prep our custom BlendState and set the Material with it if we didn't set it, otherwise ignore for use of emit()
+            if ( material == null )
+            {
+                var blendState = new BlendState();
+                blendState.ColorSourceBlend = blendState.AlphaSourceBlend = _emitterConfig.blendFuncSource;
+                blendState.ColorDestinationBlend = blendState.AlphaDestinationBlend = _emitterConfig.blendFuncDestination;
 
-			material = new Material( blendState );
+                material = new Material( blendState );
+            }
 
             //prepare animation if we have one
             if( _emitterConfig.animation != null ) _emitterConfig.animation.prepareForUse();
@@ -142,6 +151,9 @@ namespace Nez.Particles
                 var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
                 pos += currentParticle.position;
 
+                if ( _emitterConfig.animation != null )
+                    currentParticle.particleSize = _emitterConfig.animation.frames[ currentParticle.animationFrame ].sourceRect.Width;
+
                 // if update returns true that means the particle is done
                 if ( currentParticle.update( _emitterConfig, ref collisionConfig, rootPosition ) ||
                      (particleBounds != RectangleF.maxRect && particleBounds.contains( pos ) == false ) )
@@ -189,10 +201,10 @@ namespace Nez.Particles
 				var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
                 Vector2 parallax = (_emitterConfig.parallax + currentParticle.parallaxVariance ) * camera.position;
 
-				if( _emitterConfig.subtexture == null )
+                if ( _emitterConfig.animation != null )
+                    graphics.batcher.draw( _emitterConfig.animation.frames[ currentParticle.animationFrame ], pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.animation.frames[ currentParticle.animationFrame ].center, currentParticle.particleSize / _emitterConfig.animation.frames[ currentParticle.animationFrame ].sourceRect.Width, SpriteEffects.None, layerDepth );
+                else if ( _emitterConfig.subtexture == null )
 					graphics.batcher.draw( graphics.pixelTexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * 0.5f, SpriteEffects.None, layerDepth );
-				else if( _emitterConfig.animation != null )
-                    graphics.batcher.draw( _emitterConfig.animation.frames[ currentParticle.animationFrame], pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
                 else
                     graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position + parallax, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
 			}

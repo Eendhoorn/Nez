@@ -37,8 +37,6 @@ namespace Nez.Particles
 		// stored at particle creation time and used for lerping the color
 		float _particleLifetime;
 
-        int currentFrame = 0;
-
 		/// <summary>
 		/// flag indicating if this particle has already collided so that we know not to move it in the normal fashion
 		/// </summary>
@@ -196,9 +194,22 @@ namespace Nez.Particles
 				rotation += _rotationDelta * Time.deltaTime;
 
                 //update animation
-                
+                if ( emitterConfig.animation != null )
+                {
+                    var desiredFrame = 0;
+                    if( emitterConfig.animationByLifetime )
+                        desiredFrame = Mathf.fastFloorToInt(t * emitterConfig.animation.frames.Count);
+                    else
+                        Mathf.fastFloorToInt( (_particleLifetime - _timeToLive ) / emitterConfig.animation.secondsPerFrame );
 
-				if( collisionConfig.enabled )
+                    if ( desiredFrame != animationFrame )
+                    {
+                        animationFrame = (int)desiredFrame;
+                        if ( animationFrame >= emitterConfig.animation.frames.Count ) animationFrame = animationFrame % emitterConfig.animation.frames.Count;
+                    }
+                }
+
+                if ( collisionConfig.enabled )
 				{
 					// if we already collided we have to handle the collision response
 					if( _collided )
