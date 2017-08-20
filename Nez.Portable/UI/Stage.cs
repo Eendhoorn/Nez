@@ -496,7 +496,7 @@ namespace Nez.UI
 		/// The Stages world width
 		/// </summary>
 		/// <returns>The width.</returns>
-		public float getWidth()
+		public virtual float getWidth()
 		{
 			if( entity != null && !isFullScreen )
 				return entity.scene.sceneRenderTargetSize.X;
@@ -508,7 +508,7 @@ namespace Nez.UI
 		/// The Stages world height
 		/// </summary>
 		/// <returns>The height.</returns>
-		public float getHeight()
+		public virtual float getHeight()
 		{
 			if( entity != null && !isFullScreen )
 				return entity.scene.sceneRenderTargetSize.Y;

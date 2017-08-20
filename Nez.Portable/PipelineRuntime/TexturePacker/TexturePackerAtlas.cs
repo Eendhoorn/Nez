@@ -16,6 +16,7 @@ namespace Nez.TextureAtlases
 		/// maps actual image names to the index in the subtextures list
 		/// </summary>
 		readonly Dictionary<string,int> _subtextureMap;
+        public Dictionary<string, int> subtextureMap { get { return _subtextureMap; } } 
 
 		/// <summary>
 		/// stores a map of the name of the sprite animation (derived from texturepacker filename metadata) to an array. 

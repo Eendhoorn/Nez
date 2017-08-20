@@ -102,16 +102,36 @@ namespace Nez.Systems
 			list.Add( handler );
 		}
 
+        /*
+        public void addObserver<W>( T eventType, Action<W> handler ) where W : U
+        {
+            List<Action<U>> list = null;
+            Action<U> convertedHandler = (Action<U>)handler;
+            if ( !_messageTable.TryGetValue( eventType, out list ) )
+            {
+                list = new List<Action<U>>();
+                _messageTable.Add( eventType, list );
+            }
 
-		public void removeObserver( T eventType, Action<U> handler )
+            Assert.isFalse( list.Contains( handler ), "You are trying to add the same observer twice" );
+            list.Add( handler);
+        }*/
+
+
+        public void removeObserver( T eventType, Action<U> handler )
 		{
 			// we purposely do this in unsafe fashion so that it will throw an Exception if someone tries to remove a handler that
 			// was never added
 			_messageTable[eventType].Remove( handler );
 		}
 
+        public bool hasObserver( T eventType, Action<U> handler )
+        {
+            return _messageTable[ eventType ].IndexOf( handler ) != -1;
+        }
 
-		public void emit( T eventType, U data )
+
+        public void emit( T eventType, U data )
 		{
 			List<Action<U>> list = null;
 			if( _messageTable.TryGetValue( eventType, out list ) )
@@ -121,7 +141,6 @@ namespace Nez.Systems
 			}
 		}
 
-      
     }
 
 }

@@ -14,7 +14,7 @@ namespace Nez.AI.FSM
 
 		protected State<T> _currentState;
 		protected T _context;
-		Dictionary<Type, State<T>> _states = new Dictionary<Type, State<T>>();
+		protected Dictionary<Type, State<T>> _states = new Dictionary<Type, State<T>>();
 
 
 		public StateMachine( T context, State<T> initialState )
@@ -40,10 +40,10 @@ namespace Nez.AI.FSM
         public State<T>[] getStates()
         {
             State<T>[] states = new State<T>[ _states.Count ];
-            for ( int i = 0; i < _states.Count; i++ )
-            {
-                _states.Values.CopyTo( states, i );
-            }
+            //for ( int i = 0; i < _states.Count; i++ )
+            //{
+                _states.Values.CopyTo( states, 0 );
+            //}
 
             return states;
         }

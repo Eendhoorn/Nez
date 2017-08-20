@@ -17,7 +17,7 @@ namespace Nez.Tiled
 		public List<TiledTilesetTile> tiles = new List<TiledTilesetTile>();
 
 		protected readonly Dictionary<int,Subtexture> _regions;
-
+        public int Length { get { return _regions.Keys.Count; } }
 
 		public TiledTileset( Texture2D texture, int firstId )
 		{

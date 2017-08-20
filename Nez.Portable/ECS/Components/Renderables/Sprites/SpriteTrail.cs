@@ -314,7 +314,7 @@ namespace Nez.Sprites
 		/// <summary>
 		/// stores the last position for distance calculations and spawns a new trail instance if there is one available in the stack
 		/// </summary>
-		void spawnInstance()
+		protected virtual void spawnInstance()
 		{
 			_lastPosition = _sprite.entity.transform.position + _sprite.localOffset;
 

@@ -136,10 +136,18 @@ namespace Nez
 			_areVertsDirty = false;
 		}
 
+        public void reset()
+        {
+            foreach ( var seg in _segments )
+            {
+                seg.position = entity.position;
+            }
+        }
 
-		#region Component/RenderableComponent/IUpdatable
 
-		public override void onEnabled()
+        #region Component/RenderableComponent/IUpdatable
+
+        public override void onEnabled()
 		{
 			base.onEnabled();
 
@@ -204,7 +212,7 @@ namespace Nez
 			calculateVertices();
 
             graphics.batcher.flushBatch();
-            Core.graphicsDevice.BlendState = BlendState.Opaque;
+            Core.graphicsDevice.BlendState = material.blendState;// BlendState.Opaque;
             Core.graphicsDevice.DepthStencilState = DepthStencilState.Default; 
 
             _basicEffect.Projection = camera.projectionMatrix;
@@ -250,6 +258,6 @@ namespace Nez
 			}
 		}
 
-	}
+    }
 }
 

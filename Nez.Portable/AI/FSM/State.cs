@@ -4,7 +4,12 @@
 	{
 		protected StateMachine<T> _machine;
 		protected T _context;
+        public readonly string name;
 
+        public State( string name)
+        {
+            this.name = name;
+        }
 
 		public void setMachineAndContext( StateMachine<T> machine, T context )
 		{

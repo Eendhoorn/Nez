@@ -155,7 +155,7 @@ namespace Nez
 		public static T createDelegate<T>( System.Object targetObject, MethodInfo methodInfo )
 		{
 			#if NETFX_CORE
-			return (T)(object)methodInfo.CreateDelegate( typeof( T ), targetObject );
+			return (T)(object)methodInfo.CreateDelegate( typeof( T ),  targetObject );
 			#else
 			return (T)(object)Delegate.CreateDelegate( typeof( T ), targetObject, methodInfo );
 			#endif

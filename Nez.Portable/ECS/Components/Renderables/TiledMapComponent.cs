@@ -65,10 +65,11 @@ namespace Nez
         /// </summary>
         /// <param name="newWidth"></param>
         /// <param name="newHeight"></param>
-        public void Resize( int newWidth, int newHeight )
+        public void Resize( int newWidth, int newHeight, Vector2 origin )
         {
-            tiledMap.Resize( newWidth, newHeight );
+            tiledMap.Resize( newWidth, newHeight, origin );
             _areBoundsDirty = true;
+            var b = bounds;
         }
 
 

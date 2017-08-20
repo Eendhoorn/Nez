@@ -11,8 +11,8 @@ namespace Nez.Tiled
 		#region Fields and Properties
 
 		public readonly int firstGid;
-		public int _width;
-		public int _height;
+		protected int _width;
+		protected int _height;
         public int width { get { return _width; } }
         public int height { get { return _height; } }
         public readonly int tileWidth;
@@ -82,14 +82,14 @@ namespace Nez.Tiled
         /// </summary>
         /// <param name="newWidth"></param>
         /// <param name="newHeight"></param>
-        public void Resize( int newWidth, int newHeight )
+        public void Resize( int newWidth, int newHeight, Vector2 origin )
         {
             this._width = newWidth;
             this._height = newHeight;
 
             foreach ( TiledTileLayer layer in layers )
             {
-                layer.Resize( newWidth, newHeight );
+                layer.Resize( newWidth, newHeight, origin );
             }
 
         }

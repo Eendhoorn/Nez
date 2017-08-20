@@ -66,7 +66,7 @@ namespace Nez.Tiled
         /// </summary>
         /// <param name="newWidth"></param>
         /// <param name="newHeight"></param>
-        public virtual void Resize( int newWidth, int newHeight )
+        public virtual void Resize( int newWidth, int newHeight, Vector2 origin )
         {
             TiledTile[] prevTiles = _tiles;
 
@@ -79,23 +79,28 @@ namespace Nez.Tiled
             _tiles = new TiledTile[ newWidth * newHeight ];
             populateTilePositions();
 
+            int baseY = (int)origin.Y * (newHeight - prevHeight);
             int w = prevWidth > width ? width : prevWidth;
             int h = prevHeight > height ? width : prevHeight;
+
+            Debug.log( "resizing from basetile : " + baseY );
 
             for ( int x = 0; x < w; x++ )
             {
                 for ( int y = 0; y < h; y++ )
                 {
-                    int newIndex = y * width + x;
+                    int newIndex =  (baseY + y) * width + x;
                     int prevIndex = y * prevWidth + x;
 
                     //set existing tiles
-                    if ( prevIndex < prevTiles.Length && newIndex < _tiles.Length )
+                    if ( prevIndex < prevTiles.Length && newIndex < _tiles.Length && prevIndex > 0)
                     {
                         _tiles[ newIndex ] = prevTiles[ prevIndex ];
                     }
                 }
             }
+
+            populateTilePositions();
         }
 
 

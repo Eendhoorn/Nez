@@ -150,7 +150,7 @@ namespace Nez
 			_scrollPane = ui.stage.addElement( new ScrollPane( _table, _skin ) );
 			// force a validate which will layout the ScrollPane and populate the proper scrollBarWidth
 			_scrollPane.validate();
-			_scrollPane.setSize( 295 + _scrollPane.getScrollBarWidth(), Screen.height );
+			_scrollPane.setSize( 395 + _scrollPane.getScrollBarWidth(), Screen.height );
 		}
 
 

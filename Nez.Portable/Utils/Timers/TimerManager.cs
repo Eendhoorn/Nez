@@ -22,6 +22,14 @@ namespace Nez.Timers
 			}
 		}
 
+        /// <summary>
+        /// Clears all timers, useful when switching scenes or other abrubt game changes
+        /// </summary>
+        public void Clear()
+        {
+            _timers.Clear();
+        }
+
 
 		/// <summary>
 		/// schedules a one-time or repeating timer that will call the passed in Action
