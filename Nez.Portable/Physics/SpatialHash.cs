@@ -277,12 +277,17 @@ namespace Nez.Spatial
 			// TODO: check gridBounds to ensure the ray starts/ends in the grid. watch out for end cells since they report out of bounds due to int comparison
 
 			// what voxel are we on
-			var intX = Mathf.fastFloorToInt( start.X );
-			var intY = Mathf.fastFloorToInt( start.Y );
+			var intX = Mathf.floorToInt( start.X );
+			var intY = Mathf.floorToInt( start.Y );
 
 			// which way we go
 			var stepX = Math.Sign( ray.direction.X );
 			var stepY = Math.Sign( ray.direction.Y );
+
+            // we make sure that if we're on the same line or row we don't step 
+            // in the unneeded direction
+			if (intX == endCell.X) stepX = 0;
+			if (intY == endCell.Y) stepY = 0;
 
 			// Calculate cell boundaries. when the step is positive, the next cell is after this one meaning we add 1.
 			// If negative, cell is before this one in which case dont add to boundary
@@ -294,9 +299,9 @@ namespace Nez.Spatial
 			// may be infinite for near vertical/horizontal rays
 			var tMaxX = ( boundaryX - start.X ) / ray.direction.X;
 			var tMaxY = ( boundaryY - start.Y ) / ray.direction.Y;
-			if( ray.direction.X == 0f )
+			if( ray.direction.X == 0f || stepX == 0)
 				tMaxX = float.PositiveInfinity;
-			if( ray.direction.Y == 0f )
+            if( ray.direction.Y == 0f || stepY == 0 )
 				tMaxY = float.PositiveInfinity;
 
 			// how far do we have to walk before crossing a cell from a cell boundary. may be infinite for near vertical/horizontal rays
@@ -470,7 +475,7 @@ namespace Nez.Spatial
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		long getKey( int x, int y )
 		{
-			return (long)x << 32 | (long)(uint)y;
+			return unchecked((long)x << 32 | (uint)y);
 		}
 
 

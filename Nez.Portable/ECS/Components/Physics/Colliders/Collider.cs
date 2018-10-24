@@ -215,6 +215,7 @@ namespace Nez
 		public override void onEnabled()
 		{
 			registerColliderWithPhysicsSystem();
+			_isPositionDirty = _isRotationDirty = true;
 		}
 
 

@@ -17,7 +17,7 @@ namespace Nez.Tiled
 		public List<TiledTilesetTile> tiles = new List<TiledTilesetTile>();
 
 		protected readonly Dictionary<int,Subtexture> _regions;
-        public int Length { get { return _regions.Keys.Count; } }
+
 
 		public TiledTileset( Texture2D texture, int firstId )
 		{
@@ -27,7 +27,7 @@ namespace Nez.Tiled
 		}
 
 
-		public TiledTileset( Texture2D texture, int firstId, int tileWidth, int tileHeight, int spacing = 2, int margin = 2 )
+		public TiledTileset( Texture2D texture, int firstId, int tileWidth, int tileHeight, int spacing = 2, int margin = 2, int tileCount = 2, int columns = 2 )
 		{
 			this.texture = texture;
 			this.firstId = firstId;
@@ -38,13 +38,17 @@ namespace Nez.Tiled
 
 			var id = firstId;
 			_regions = new Dictionary<int,Subtexture>();
-			for( var y = margin; y <= texture.Height - margin - tileHeight; y += tileHeight + spacing )
-            //added  - tileheight, otherwise leftover space in a tilesheet smaller than a tile would be considered as a region
-            {
-                for ( var x = margin; x < texture.Width - margin - tileWidth; x += tileWidth + spacing ) //added - tilewidth, same as above
+			for( var y = margin; y < texture.Height - margin; y += tileHeight + spacing )
+			{
+				var column = 0;
+
+				for( var x = margin; x < texture.Width - margin; x += tileWidth + spacing )
 				{
 					_regions.Add( id, new Subtexture( texture, x, y, tileWidth, tileHeight ) );
 					id++;
+
+					if( ++column >= columns ) 
+						break;
 				}
 			}
 		}

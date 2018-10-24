@@ -40,7 +40,7 @@ namespace Nez
 			get { return _maxSupportedGamePads; }
 			set
 			{
-				_maxSupportedGamePads = Mathf.clamp( value, 1, 4 );
+				_maxSupportedGamePads = Mathf.clamp( value, 1, GamePad.MaximumGamePadCount );
 				gamePads = new GamePadData[_maxSupportedGamePads];
 				for( var i = 0; i < _maxSupportedGamePads; i++ )
 					gamePads[i] = new GamePadData( (PlayerIndex)i );
@@ -229,6 +229,33 @@ namespace Nez
 			get
 			{
 				return _currentMouseState.RightButton == ButtonState.Released && _previousMouseState.RightButton == ButtonState.Pressed;
+			}
+		}
+
+		/// <summary>
+		/// only true if down this frame
+		/// </summary>
+		public static bool middleMouseButtonPressed
+		{
+			get { return _currentMouseState.MiddleButton == ButtonState.Pressed && _previousMouseState.MiddleButton == ButtonState.Released; }
+		}
+
+		/// <summary>
+		/// true while the button is down
+		/// </summary>
+		public static bool middleMouseButtonDown
+		{
+			get { return _currentMouseState.MiddleButton == ButtonState.Pressed; }
+		}
+
+		/// <summary>
+		/// true only the frame the button is released
+		/// </summary>
+		public static bool middleMouseButtonReleased
+		{
+			get
+			{
+				return _currentMouseState.MiddleButton == ButtonState.Released && _previousMouseState.MiddleButton == ButtonState.Pressed;
 			}
 		}
 

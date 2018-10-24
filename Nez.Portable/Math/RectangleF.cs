@@ -89,8 +89,8 @@ namespace Nez
 		public Vector2 max { get { return new Vector2( right, bottom ); } }
 
 		/// <summary>
-		/// Whether or not this <see cref="RectangleF"/> has a <see cref="Width"/> and
-		/// <see cref="Height"/> of 0, and a <see cref="Location"/> of (0, 0).
+		/// Whether or not this <see cref="RectangleF"/> has a <see cref="width"/> and
+		/// <see cref="height"/> of 0, and a <see cref="location"/> of (0, 0).
 		/// </summary>
 		public bool isEmpty
 		{
@@ -136,7 +136,7 @@ namespace Nez
 		/// A <see cref="Point"/> located in the center of this <see cref="RectangleF"/>.
 		/// </summary>
 		/// <remarks>
-		/// If <see cref="Width"/> or <see cref="Height"/> is an odd number,
+		/// If <see cref="width"/> or <see cref="height"/> is an odd number,
 		/// the center point will be rounded down.
 		/// </remarks>
 		public Vector2 center
@@ -697,7 +697,7 @@ namespace Nez
 
 
 		/// <summary>
-		/// Changes the <see cref="Location"/> of this <see cref="RectangleF"/>.
+		/// Changes the <see cref="location"/> of this <see cref="RectangleF"/>.
 		/// </summary>
 		/// <param name="offsetX">The x coordinate to add to this <see cref="RectangleF"/>.</param>
 		/// <param name="offsetY">The y coordinate to add to this <see cref="RectangleF"/>.</param>
@@ -709,7 +709,7 @@ namespace Nez
 
 
 		/// <summary>
-		/// Changes the <see cref="Location"/> of this <see cref="RectangleF"/>.
+		/// Changes the <see cref="location"/> of this <see cref="RectangleF"/>.
 		/// </summary>
 		/// <param name="offsetX">The x coordinate to add to this <see cref="RectangleF"/>.</param>
 		/// <param name="offsetY">The y coordinate to add to this <see cref="RectangleF"/>.</param>
@@ -721,7 +721,7 @@ namespace Nez
 
 
 		/// <summary>
-		/// Changes the <see cref="Location"/> of this <see cref="RectangleF"/>.
+		/// Changes the <see cref="location"/> of this <see cref="RectangleF"/>.
 		/// </summary>
 		/// <param name="amount">The x and y components to add to this <see cref="RectangleF"/>.</param>
 		public void offset( Point amount )
@@ -732,7 +732,7 @@ namespace Nez
 
 
 		/// <summary>
-		/// Changes the <see cref="Location"/> of this <see cref="RectangleF"/>.
+		/// Changes the <see cref="location"/> of this <see cref="RectangleF"/>.
 		/// </summary>
 		/// <param name="amount">The x and y components to add to this <see cref="RectangleF"/>.</param>
 		public void offset( Vector2 amount )
@@ -770,6 +770,37 @@ namespace Nez
 			result.y = Math.Min( value1.y, value2.y );
 			result.width = Math.Max( value1.right, value2.right ) - result.x;
 			result.height = Math.Max( value1.bottom, value2.bottom ) - result.y;
+		}
+
+
+		/// <summary>
+		/// Creates a new <see cref="RectangleF"/> where the rectangles overlap.
+		/// </summary>
+		/// <param name="value1">The first <see cref="RectangleF"/>.</param>
+		/// <param name="value2">The second <see cref="RectangleF"/>.</param>
+		/// <returns>The overlap of the two rectangles.</returns>
+		public static RectangleF overlap( RectangleF value1, RectangleF value2 )
+		{
+			var x = Math.Max( Math.Max( value1.x, value2.x ), 0 );
+			var y = Math.Max( Math.Max( value1.y, value2.y ), 0 );
+			return new RectangleF( x, y,
+				Math.Max( Math.Min( value1.right, value2.right ) - x, 0 ),
+				Math.Max( Math.Min( value1.bottom, value2.bottom ) - y, 0 ) );
+		}
+
+
+		/// <summary>
+		/// Creates a new <see cref="RectangleF"/> where the rectangles overlap.
+		/// </summary>
+		/// <param name="value1">The first <see cref="RectangleF"/>.</param>
+		/// <param name="value2">The second <see cref="RectangleF"/>.</param>
+		/// <param name="result">The overlap of the two rectangles as an output parameter.</param>
+		public static void overlap( ref RectangleF value1, ref RectangleF value2, out RectangleF result )
+		{
+			result.x = Math.Max( Math.Max( value1.x, value2.x ), 0 );
+			result.y = Math.Max( Math.Max( value1.y, value2.y ), 0 );
+			result.width = Math.Max( Math.Min( value1.right, value2.right ) - result.x, 0 );
+			result.height = Math.Max( Math.Min( value1.bottom, value2.bottom ) - result.y, 0 );
 		}
 
 
@@ -948,7 +979,7 @@ namespace Nez
 
 		/// <summary>
 		/// Returns a <see cref="String"/> representation of this <see cref="RectangleF"/> in the format:
-		/// {X:[<see cref="X"/>] Y:[<see cref="Y"/>] Width:[<see cref="Width"/>] Height:[<see cref="Height"/>]}
+		/// {X:[<see cref="x"/>] Y:[<see cref="y"/>] Width:[<see cref="width"/>] Height:[<see cref="height"/>]}
 		/// </summary>
 		/// <returns><see cref="String"/> representation of this <see cref="RectangleF"/>.</returns>
 		public override string ToString()
