@@ -15,6 +15,7 @@ namespace Nez.Sprites
 		public event Action<TEnum> onAnimationCompletedEvent;
 		public bool isPlaying { get; private set; }
 		public int currentFrame { get; private set; }
+        public bool timeScaleIndependant = false;
 
 		/// <summary>
 		/// gets/sets the currently playing animation
@@ -27,9 +28,13 @@ namespace Nez.Sprites
 		}
 
 		Dictionary<TEnum, SpriteAnimation> _animations;
+        public Dictionary<TEnum, SpriteAnimation> animations
+        {
+            get { return _animations; }
+        }
 
-		// playback state
-		SpriteAnimation _currentAnimation;
+        // playback state
+        SpriteAnimation _currentAnimation;
 		TEnum _currentAnimationKey;
 		float _totalElapsedTime;
 		float _elapsedDelay;
@@ -48,6 +53,12 @@ namespace Nez.Sprites
 		{
 			_animations = new Dictionary<TEnum, SpriteAnimation>( customComparer );
 		}
+
+        /*
+        public Sprite()
+        {
+
+        }*/
 
 
 		public Sprite( IEqualityComparer<TEnum> customComparer, Subtexture subtexture ) : base( subtexture )
@@ -85,7 +96,7 @@ namespace Nez.Sprites
 			// handle delay
 			if( !_delayComplete && _elapsedDelay < _currentAnimation.delay )
 			{
-				_elapsedDelay += Time.deltaTime;
+				_elapsedDelay += timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
 				if( _elapsedDelay >= _currentAnimation.delay )
 					_delayComplete = true;
 
@@ -94,12 +105,12 @@ namespace Nez.Sprites
 
 			// count backwards if we are going in reverse
 			if( _isReversed )
-				_totalElapsedTime -= Time.deltaTime;
-			else
-				_totalElapsedTime += Time.deltaTime;
+				_totalElapsedTime -= timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
+            else
+				_totalElapsedTime += timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
 
 
-			_totalElapsedTime = Mathf.clamp( _totalElapsedTime, 0f, _currentAnimation.totalDuration );
+            _totalElapsedTime = Mathf.clamp( _totalElapsedTime, 0f, _currentAnimation.totalDuration );
 			_completedIterations = Mathf.floorToInt( _totalElapsedTime / _currentAnimation.iterationDuration );
 			_isLoopingBackOnPingPong = false;
 

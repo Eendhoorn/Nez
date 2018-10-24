@@ -15,9 +15,10 @@ namespace Nez.Timers
 		Action<ITimer> _onTime;
 		bool _isDone;
 		float _elapsedTime;
+        public bool ignoreTimeScale { get; set; }
 
 
-		public void stop()
+        public void stop()
 		{
 			_isDone = true;
 		}
@@ -47,7 +48,7 @@ namespace Nez.Timers
 					_isDone = true;
 			}
 
-			_elapsedTime += Time.deltaTime;
+			_elapsedTime +=  ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime;
 
 			return _isDone;
 		}

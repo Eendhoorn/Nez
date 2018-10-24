@@ -432,8 +432,13 @@ namespace Nez.Spatial
 				}
 				else
 				{
-					throw new NotImplementedException( "overlapCircle against this collider type is not implemented!" );
-				}
+                    if ( collider.shape.overlaps( _overlapTestCirce ) )
+                    {
+                        results[ resultCounter ] = collider;
+                        resultCounter++;
+                    }
+                    //throw new NotImplementedException( "overlapCircle against this collider type is not implemented!" );
+                }
 
 				// if our results array is full return
 				if( resultCounter == results.Length )

@@ -147,8 +147,8 @@ namespace Nez.UI
 				else
 					yMax += _selectBox.height;
 				
-				if( point.X < 0 || point.X > width || point.Y > yMax || point.Y < yMin )
-					Core.schedule( 0f, false, this, t => ( (SelectBoxList<T>)t.context ).hide() );
+				/*if( point.X < 0 || point.X > width || point.Y > yMax || point.Y < yMin )
+					Core.schedule( 0f, false, this, t => ( (SelectBoxList<T>)t.context ).hide() );*/
 			}
 			
 			base.update();

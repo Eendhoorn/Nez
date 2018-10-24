@@ -491,5 +491,8 @@
       <HintPath>MonoGamePCL\MonoGame.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Nez.PipelineImporter\bin\Debug\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

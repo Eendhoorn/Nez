@@ -11,7 +11,7 @@
 		public override float height { get { return _spriteToMime.height; } }
 		public override RectangleF bounds { get { return _spriteToMime.bounds; } }
 
-		Sprite _spriteToMime;
+		public Sprite _spriteToMime;
 
 
 		public SpriteMime()

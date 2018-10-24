@@ -14,7 +14,7 @@ namespace Nez
 		/// <summary>
 		/// list of components added to the entity
 		/// </summary>
-		FastList<Component> _components = new FastList<Component>();
+		public FastList<Component> _components = new FastList<Component>();
 
 		/// <summary>
 		/// list of all Components that want update called
@@ -24,7 +24,7 @@ namespace Nez
 		/// <summary>
 		/// The list of components that were added this frame. Used to group the components so we can process them simultaneously
 		/// </summary>
-		internal List<Component> _componentsToAdd = new List<Component>();
+		public List<Component> _componentsToAdd = new List<Component>();
 
 		/// <summary>
 		/// The list of components that were marked for removal this frame. Used to group the components so we can process them simultaneously

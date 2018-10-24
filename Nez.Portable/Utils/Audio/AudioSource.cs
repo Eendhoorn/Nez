@@ -15,6 +15,8 @@ namespace Nez.Audio
 		bool _useRandomPan;
 		float _panMin, _panMax;
 
+        public SoundEffectInstance currentSound;
+
         public int Length
         {
             get { return _soundEffects.Count; }
@@ -67,10 +69,23 @@ namespace Nez.Audio
 
 		public bool play()
 		{
-			if( _useRandomPitch || _useRandomPan )
-				return _soundEffects.randomItem().Play( 1, Random.range( _pitchMin, _pitchMax ), Random.range( _panMin, _panMax ) );
-			else
-				return _soundEffects.randomItem().Play();
+            currentSound = _soundEffects.randomItem().CreateInstance();
+
+
+            if ( _useRandomPitch || _useRandomPan )
+            {
+                currentSound.Pitch = Random.range( _pitchMin, _pitchMax );
+                currentSound.Pan = Random.range( _panMin, _panMax );
+
+                currentSound.Play();
+            }
+            else
+            {
+                currentSound.Pitch = currentSound.Pan = 0;
+                currentSound.Play();
+            }
+
+            return true;
 		}
 
 

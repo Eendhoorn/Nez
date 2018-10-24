@@ -93,9 +93,13 @@ namespace Nez.Tiled
                     int prevIndex = y * prevWidth + x;
 
                     //set existing tiles
-                    if ( prevIndex < prevTiles.Length && newIndex < _tiles.Length && prevIndex > 0)
+                    if ( prevIndex < prevTiles.Length && newIndex < _tiles.Length && prevIndex > 0 )
                     {
                         _tiles[ newIndex ] = prevTiles[ prevIndex ];
+                    }
+                    else
+                    {
+                        //setTile( new TiledTile( newIndex ) );
                     }
                 }
             }

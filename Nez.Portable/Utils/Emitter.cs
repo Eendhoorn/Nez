@@ -140,7 +140,6 @@ namespace Nez.Systems
 					list[i]( data );
 			}
 		}
-
     }
 
 }
