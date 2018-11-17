@@ -31,6 +31,7 @@ namespace Nez.Sprites
         public Dictionary<TEnum, SpriteAnimation> animations
         {
             get { return _animations; }
+            set { animations = value; }
         }
 
         // playback state

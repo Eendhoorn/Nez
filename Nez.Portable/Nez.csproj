@@ -33,8 +33,18 @@
     <ConsolePause>false</ConsolePause>
     <DocumentationFile>bin\Release\Nez.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EditorEnabled|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\EditorEnabled\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DocumentationFile>bin\Debug\Nez.XML</DocumentationFile>
+    <NoWarn>1591,1570,1572,1573</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="ECS\Camera.cs" />
@@ -64,6 +74,9 @@
     <Compile Include="Physics\SpatialHash.cs" />
     <Compile Include="PipelineRuntime\Tiled\TiledIsometricTiledLayer.cs" />
     <Compile Include="UI\Base\ICullable.cs" />
+    <Compile Include="UI\Drawable\SpriteDrawable.cs" />
+    <Compile Include="UI\Widgets\CollapseableTable.cs" />
+    <Compile Include="UI\Widgets\ComboBox.cs" />
     <Compile Include="Utils\Emitter.cs" />
     <Compile Include="Utils\Time.cs" />
     <Compile Include="Core.cs" />
@@ -527,7 +540,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\packages\MonoGame.Framework.Portable.3.7.0.1708\lib\portable-net45+win8+wpa81\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
