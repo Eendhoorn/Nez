@@ -23,12 +23,13 @@ namespace Nez
 		/// <summary>
 		/// encapsulates the Entity's position/rotation/scale and allows setting up a hieararchy
 		/// </summary>
-		public readonly Transform transform;
+        //readonly breaks json serialization references..
+		public Transform transform;
 
 		/// <summary>
 		/// list of all the components currently attached to this entity
 		/// </summary>
-		public readonly ComponentList components;
+		public ComponentList components;
 
 		/// <summary>
 		/// use this however you want to. It can later be used to query the scene for all Entities with a specific tag
@@ -502,6 +503,14 @@ namespace Nez
 		{
 			return components.getComponents<T>();
 		}
+
+        public List<Component> getComponents( bool includeUnAdded)
+        {
+            List<Component> list = new List<Component>(components._components.buffer);
+            if( includeUnAdded) list.AddRange( components._componentsToAdd );
+
+            return list;
+        }
 
 
 		/// <summary>

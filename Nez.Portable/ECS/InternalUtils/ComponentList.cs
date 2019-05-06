@@ -38,7 +38,6 @@ namespace Nez
 		/// </summary>
 		bool _isComponentListUnsorted;
 
-
 		public ComponentList( Entity entity )
 		{
 			_entity = entity;

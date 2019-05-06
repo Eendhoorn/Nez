@@ -212,6 +212,8 @@ namespace Nez
 		internal readonly FastList<PostProcessor> _postProcessors = new FastList<PostProcessor>();
 		bool _didSceneBegin;
 
+        public bool paused = false;
+
 
 		/// <summary>
 		/// sets the default design size and resolution policy that new scenes will use. horizontal/verticalBleed are only relevant for BestFit.
@@ -396,6 +398,8 @@ namespace Nez
 
 		public virtual void update()
 		{
+            if (paused) return;
+
 			// we set the RenderTarget here so that the Viewport will match the RenderTarget properly
 			Core.graphicsDevice.setRenderTarget( _sceneRenderTarget );
 
@@ -1052,13 +1056,22 @@ namespace Nez
 			return entities.findEntity( name );
 		}
 
-
-		/// <summary>
-		/// returns all entities with the given tag
+        /// <summary>
+		/// searches for and returns the first Entity with name
 		/// </summary>
-		/// <returns>The entities by tag.</returns>
-		/// <param name="tag">Tag.</param>
-		public List<Entity> findEntitiesWithTag( int tag )
+		/// <returns>The entity.</returns>
+		/// <param name="name">Name.</param>
+		public Entity[] findEntities( string name )
+        {
+            return entities.findEntities( name );
+        }
+
+        /// <summary>
+        /// returns all entities with the given tag
+        /// </summary>
+        /// <returns>The entities by tag.</returns>
+        /// <param name="tag">Tag.</param>
+        public List<Entity> findEntitiesWithTag( int tag )
 		{
 			return entities.entitiesWithTag( tag );
 		}

@@ -9,5 +9,9 @@ namespace Nez
 	[AttributeUsage( AttributeTargets.Field | AttributeTargets.Property )]
 	public class InspectableAttribute : Attribute
 	{}
+
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class NonInspectableAttribute : Attribute
+    { }
 }
 

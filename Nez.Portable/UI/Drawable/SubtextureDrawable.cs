@@ -52,8 +52,11 @@ namespace Nez.UI
 			set
 			{
 				_subtexture = value;
-				minWidth = _subtexture.sourceRect.Width;
-				minHeight = _subtexture.sourceRect.Height;
+                if (_subtexture != null)
+                {
+                    minWidth = _subtexture.sourceRect.Width;
+                    minHeight = _subtexture.sourceRect.Height;
+                }
 			}
 		}
 		protected Subtexture _subtexture;
@@ -94,6 +97,8 @@ namespace Nez.UI
 		{
 			if( tintColor.HasValue )
 				color = color.multiply( tintColor.Value );
+
+            if (_subtexture == null) return;
 
 			graphics.batcher.draw( _subtexture, new Rectangle( (int)x, (int)y, (int)width, (int)height ), _subtexture.sourceRect, color, spriteEffects );
 		}

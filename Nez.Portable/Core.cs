@@ -220,10 +220,13 @@ namespace Nez
 				return;
 			}
 
-			if( _scene != null )
-				_scene.update();
+            if (_scene != null)
+            {
+                _scene.update();
+                if (_scene.paused) SuppressDraw();
+            }
 
-			if( _scene != _nextScene )
+            if ( _scene != _nextScene )
 			{
 				if( _scene != null )
 					_scene.end();

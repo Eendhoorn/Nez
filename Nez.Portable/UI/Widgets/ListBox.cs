@@ -14,16 +14,17 @@ namespace Nez.UI
 	public class ListBox<T> : Element, IInputListener where T : class
 	{
 		public event Action<T> onChanged;
+        public event Action<T> onClicked;
 
-		ListBoxStyle _style;
-		List<T> _items = new List<T>();
-		ArraySelection<T> _selection;
-		float _prefWidth, _prefHeight;
-		float _itemHeight;
-		float _textOffsetX, _textOffsetY;
-		Rectangle? _cullingArea;
-		int _hoveredItemIndex = -1;
-		bool _isMouseOverList;
+		protected ListBoxStyle _style;
+		protected List<T> _items = new List<T>();
+		protected ArraySelection<T> _selection;
+		protected float _prefWidth, _prefHeight;
+		protected float _itemHeight;
+		protected float _textOffsetX, _textOffsetY;
+		protected Rectangle? _cullingArea;
+		protected int _hoveredItemIndex = -1;
+		protected bool _isMouseOverList;
 
 
 		public ListBox( Skin skin, string styleName = null ) : this( skin.get<ListBoxStyle>( styleName ) )
@@ -93,6 +94,8 @@ namespace Nez.UI
 			if( lastSelectedItem != _items[index] && onChanged != null )
 				onChanged( _items[index] );
 
+            if (onClicked != null) onClicked(_items[index]);
+
 			return true;
 		}
 
@@ -111,7 +114,7 @@ namespace Nez.UI
 		}
 
 
-		int getItemIndexUnderMousePosition( Vector2 mousePos )
+		protected int getItemIndexUnderMousePosition( Vector2 mousePos )
 		{
 			if( _selection.isDisabled() || _items.Count == 0 )
 				return -1;
@@ -309,8 +312,21 @@ namespace Nez.UI
 			return this;
 		}
 
+        /// <summary>
+		/// adds selected index to selection
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public ListBox<T> addSelectedIndex(int index)
+        {
+            Assert.isFalse(index < -1 || index >= _items.Count, "index must be >= -1 and < " + _items.Count + ": " + index);
 
-		public ListBox<T> setItems( params T[] newItems )
+            _selection.add(_items[index]);
+
+            return this;
+        }
+
+
+        public ListBox<T> setItems( params T[] newItems )
 		{
 			setItems( new List<T>( newItems ) );
 			return this;

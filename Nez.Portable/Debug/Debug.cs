@@ -281,13 +281,21 @@ namespace Nez
 			System.Diagnostics.Debugger.Break();
 		}
 
+        [Conditional("DEBUG")]
+        public static void clear()
+        {
+            _debugDrawItems.Clear();
+            _screenSpaceDebugDrawItems.Clear();
+        }
 
-		/// <summary>
-		/// times how long an Action takes to run and returns the TimeSpan
-		/// </summary>
-		/// <returns>The action.</returns>
-		/// <param name="action">Action.</param>
-		public static TimeSpan timeAction( Action action, uint numberOfIterations = 1 )
+
+
+        /// <summary>
+        /// times how long an Action takes to run and returns the TimeSpan
+        /// </summary>
+        /// <returns>The action.</returns>
+        /// <param name="action">Action.</param>
+        public static TimeSpan timeAction( Action action, uint numberOfIterations = 1 )
 		{
 			var stopwatch = new Stopwatch();
 			stopwatch.Start();

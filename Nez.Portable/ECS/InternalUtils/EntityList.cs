@@ -263,13 +263,37 @@ namespace Nez
 			return null;
 		}
 
-
-		/// <summary>
-		/// returns a list of all entities with tag. If no entities have the tag an empty list is returned. The returned List can be put back in the pool via ListPool.free.
+        /// <summary>
+		/// returns the first Entity found with a name of name. If none are found returns null.
 		/// </summary>
-		/// <returns>The with tag.</returns>
-		/// <param name="tag">Tag.</param>
-		public List<Entity> entitiesWithTag( int tag )
+		/// <returns>The entity.</returns>
+		/// <param name="name">Name.</param>
+		public Entity[] findEntities( string name )
+        {
+            List<Entity> foundEntities = new List<Entity>();
+
+            for ( var i = 0; i < _entities.length; i++ )
+            {
+                if ( _entities.buffer[ i ].name == name )
+                    foundEntities.Add( _entities[ i ] );
+            }
+
+            foreach ( var entity in _entitiesToAdd )
+            {
+                if ( entity.name == name )
+                    foundEntities.Add( entity );
+            }
+
+            return foundEntities.ToArray();
+        }
+
+
+        /// <summary>
+        /// returns a list of all entities with tag. If no entities have the tag an empty list is returned. The returned List can be put back in the pool via ListPool.free.
+        /// </summary>
+        /// <returns>The with tag.</returns>
+        /// <param name="tag">Tag.</param>
+        public List<Entity> entitiesWithTag( int tag )
 		{
 			var list = getTagList( tag );
 

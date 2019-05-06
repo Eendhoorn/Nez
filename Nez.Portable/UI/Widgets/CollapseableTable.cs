@@ -14,6 +14,9 @@ namespace Nez.UI.Widgets
         public Table table;
         public Table container;
 
+        public TextButton titelLabel;
+        float tableWidth;
+
         public CollapseableTable( string title, Table table, Skin skin )
         {
             this.table = table;
@@ -22,7 +25,11 @@ namespace Nez.UI.Widgets
             //table.tableDebug( TableDebug.All );
 
             add( CreateTitleLabel( title, skin ) ).setExpandX().width( table.getWidth() );
-            row();
+            tableWidth = table.getWidth();
+            //container = new Table();
+            //add(container).width(table.getWidth());
+            
+            //row = row();
             //add( table ).width( table.getWidth() );
         }
 
@@ -34,7 +41,7 @@ namespace Nez.UI.Widgets
 
         public void Show()
         {
-            add( table ).width( table.getWidth() );
+            add(table).width( tableWidth );
             if( OnItemToggled != null ) OnItemToggled( this, table, true );
         }
 
@@ -49,9 +56,9 @@ namespace Nez.UI.Widgets
         protected TextButton CreateTitleLabel( string title, Skin skin )
         {
             //create titleLabel
-            var label = new TextButton( title, skin );
-            label.onClicked += Label_onClicked;
-            label.setTouchable( Touchable.Enabled );
+            titelLabel = new TextButton( title, skin );
+            titelLabel.onClicked += Label_onClicked;
+            titelLabel.setTouchable( Touchable.Enabled );
 
             // set a width on the cell so long labels dont cause issues if we have a leftCellWidth set
             //if ( leftCellWidth > 0 )
@@ -64,7 +71,7 @@ namespace Nez.UI.Widgets
                 table.getStage().addElement( tooltip );
             }*/
 
-            return label;
+            return titelLabel;
         }
 
         private void Label_onClicked( Button obj )
