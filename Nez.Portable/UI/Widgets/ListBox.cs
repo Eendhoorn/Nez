@@ -235,7 +235,7 @@ namespace Nez.UI
 
 		public ListBox<T> setStyle( ListBoxStyle style )
 		{
-			Assert.isNotNull( style, "style cannot be null" );
+			Insist.isNotNull( style, "style cannot be null" );
 			_style = style;
 			invalidateHierarchy();
 			return this;
@@ -302,7 +302,7 @@ namespace Nez.UI
 		/// <param name="index">Index.</param>
 		public ListBox<T> setSelectedIndex( int index )
 		{
-			Assert.isFalse( index < -1 || index >= _items.Count, "index must be >= -1 and < " + _items.Count + ": " + index );
+			Insist.isFalse( index < -1 || index >= _items.Count, "index must be >= -1 and < " + _items.Count + ": " + index );
 
 			if( index == -1 )
 				_selection.clear();
@@ -318,7 +318,7 @@ namespace Nez.UI
 		/// <param name="index">Index.</param>
 		public ListBox<T> addSelectedIndex(int index)
         {
-            Assert.isFalse(index < -1 || index >= _items.Count, "index must be >= -1 and < " + _items.Count + ": " + index);
+            Insist.isFalse(index < -1 || index >= _items.Count, "index must be >= -1 and < " + _items.Count + ": " + index);
 
             _selection.add(_items[index]);
 
@@ -340,7 +340,7 @@ namespace Nez.UI
 		/// <param name="newItems">New items.</param>
 		public ListBox<T> setItems( IList<T> newItems )
 		{
-			Assert.isNotNull( newItems, "newItems cannot be null" );
+			Insist.isNotNull( newItems, "newItems cannot be null" );
 			float oldPrefWidth = _prefWidth, oldPrefHeight = _prefHeight;
 
 			_items.Clear();

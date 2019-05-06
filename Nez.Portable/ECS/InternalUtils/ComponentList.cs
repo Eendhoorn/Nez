@@ -58,12 +58,10 @@ namespace Nez
 			_isComponentListUnsorted = true;
 		}
 
-
 		public void add( Component component )
 		{
 			_componentsToAdd.Add( component );
 		}
-
 
 		public void remove( Component component )
 		{
@@ -79,7 +77,6 @@ namespace Nez
 			_componentsToRemove.Add( component );
 		}
 
-
 		/// <summary>
 		/// removes all components from the component list immediately
 		/// </summary>
@@ -93,7 +90,6 @@ namespace Nez
 			_componentsToAdd.Clear();
 			_componentsToRemove.Clear();
 		}
-
 
 		internal void deregisterAllComponents()
 		{
@@ -116,7 +112,6 @@ namespace Nez
 				}
 			}
 		}
-
 
 		internal void registerAllComponents()
 		{
@@ -146,7 +141,7 @@ namespace Nez
 			// handle removals
 			if( _componentsToRemove.Count > 0 )
 			{
-				for( int i = 0, count = _componentsToRemove.Count; i < count; i++ )
+				for( int i = 0; i < _componentsToRemove.Count; i++ )
 				{
 					handleRemove( _componentsToRemove[i] );
 					_components.remove( _componentsToRemove[i] );
@@ -201,7 +196,6 @@ namespace Nez
 			}
 		}
 
-
 		void handleRemove( Component component )
 		{
 			// deal with renderLayer list if necessary
@@ -221,7 +215,6 @@ namespace Nez
 			component.onRemovedFromEntity();
 			component.entity = null;
 		}
-
 
 		/// <summary>
 		/// Gets the first component of type T and returns it. Optionally skips checking un-initialized Components (Components who have not yet had their
@@ -254,7 +247,6 @@ namespace Nez
 			return null;
 		}
 
-
 		/// <summary>
 		/// Gets all the components of type T without a List allocation
 		/// </summary>
@@ -279,7 +271,6 @@ namespace Nez
 			}
 		}
 
-
 		/// <summary>
 		/// Gets all the components of type T. The returned List can be put back in the pool via ListPool.free.
 		/// </summary>
@@ -294,7 +285,6 @@ namespace Nez
 			return components;
 		}
 
-
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal void update()
 		{
@@ -305,7 +295,6 @@ namespace Nez
 					_updatableComponents.buffer[i].update();
 			}
 		}
-
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal void onEntityTransformChanged( Transform.Component comp )
@@ -323,20 +312,17 @@ namespace Nez
 			}
 		}
 
-
 		internal void onEntityEnabled()
 		{
 			for( var i = 0; i < _components.length; i++ )
 				_components.buffer[i].onEnabled();
 		}
 
-
 		internal void onEntityDisabled()
 		{
 			for( var i = 0; i < _components.length; i++ )
 				_components.buffer[i].onDisabled();
 		}
-
 
 		internal void debugRender( Graphics graphics )
 		{

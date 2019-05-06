@@ -15,7 +15,6 @@ namespace Nez.Sprites
 		public event Action<TEnum> onAnimationCompletedEvent;
 		public bool isPlaying { get; private set; }
 		public int currentFrame { get; private set; }
-        public bool timeScaleIndependant = false;
 
 		/// <summary>
 		/// gets/sets the currently playing animation
@@ -23,19 +22,14 @@ namespace Nez.Sprites
 		/// <value>The current animation.</value>
 		public TEnum currentAnimation
 		{
-			get { return _currentAnimationKey; }
-			set { play( value ); }
+			get => _currentAnimationKey;
+			set => play( value );
 		}
 
 		Dictionary<TEnum, SpriteAnimation> _animations;
-        public Dictionary<TEnum, SpriteAnimation> animations
-        {
-            get { return _animations; }
-            set { animations = value; }
-        }
 
-        // playback state
-        SpriteAnimation _currentAnimation;
+		// playback state
+		SpriteAnimation _currentAnimation;
 		TEnum _currentAnimationKey;
 		float _totalElapsedTime;
 		float _elapsedDelay;
@@ -44,6 +38,9 @@ namespace Nez.Sprites
 		bool _isReversed;
 		bool _isLoopingBackOnPingPong;
 
+
+		public Sprite() : this( default( IEqualityComparer<TEnum>) )
+		{}
 
 		/// <summary>
 		/// beware the beast man! If you use this constructor you must set the subtexture or set animations so that this sprite has proper bounds
@@ -55,18 +52,10 @@ namespace Nez.Sprites
 			_animations = new Dictionary<TEnum, SpriteAnimation>( customComparer );
 		}
 
-        /*
-        public Sprite()
-        {
-
-        }*/
-
-
 		public Sprite( IEqualityComparer<TEnum> customComparer, Subtexture subtexture ) : base( subtexture )
 		{
 			_animations = new Dictionary<TEnum, SpriteAnimation>( customComparer );
 		}
-
 
 		/// <summary>
 		/// Sprite needs a Subtexture at constructor time so that it knows how to size itself
@@ -74,7 +63,6 @@ namespace Nez.Sprites
 		/// <param name="subtexture">Subtexture.</param>
 		public Sprite( Subtexture subtexture ) : this( null, subtexture )
 		{ }
-
 
 		/// <summary>
 		/// Sprite needs a Subtexture at constructor time so the first frame of the passed in animation will be used for this constructor
@@ -97,7 +85,7 @@ namespace Nez.Sprites
 			// handle delay
 			if( !_delayComplete && _elapsedDelay < _currentAnimation.delay )
 			{
-				_elapsedDelay += timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
+				_elapsedDelay += Time.deltaTime;
 				if( _elapsedDelay >= _currentAnimation.delay )
 					_delayComplete = true;
 
@@ -106,12 +94,12 @@ namespace Nez.Sprites
 
 			// count backwards if we are going in reverse
 			if( _isReversed )
-				_totalElapsedTime -= timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
-            else
-				_totalElapsedTime += timeScaleIndependant ? Time.unscaledDeltaTime : Time.deltaTime;
+				_totalElapsedTime -= Time.deltaTime;
+			else
+				_totalElapsedTime += Time.deltaTime;
 
 
-            _totalElapsedTime = Mathf.clamp( _totalElapsedTime, 0f, _currentAnimation.totalDuration );
+			_totalElapsedTime = Mathf.clamp( _totalElapsedTime, 0f, _currentAnimation.totalDuration );
 			_completedIterations = Mathf.floorToInt( _totalElapsedTime / _currentAnimation.iterationDuration );
 			_isLoopingBackOnPingPong = false;
 
@@ -180,7 +168,7 @@ namespace Nez.Sprites
 
 			// time goes backwards when we are reversing a ping-pong loop
 			if( _isLoopingBackOnPingPong )
-                elapsedTime = _currentAnimation.iterationDuration - elapsedTime;
+				elapsedTime = _currentAnimation.iterationDuration - elapsedTime;
 
 
 			// fetch our desired frame
@@ -215,10 +203,9 @@ namespace Nez.Sprites
 			return this;
 		}
 
-
 		public SpriteAnimation getAnimation( TEnum key )
 		{
-			Assert.isTrue( _animations.ContainsKey( key ), "{0} is not present in animations", key );
+			Insist.isTrue( _animations.ContainsKey( key ), "{0} is not present in animations", key );
 			return _animations[key];
 		}
 
@@ -232,7 +219,7 @@ namespace Nez.Sprites
 		/// <param name="startFrame">Start frame.</param>
 		public SpriteAnimation play( TEnum animationKey, int startFrame = 0 )
 		{
-			Assert.isTrue( _animations.ContainsKey( animationKey ), "Attempted to play an animation that doesnt exist" );
+			Insist.isTrue( _animations.ContainsKey( animationKey ), "Attempted to play an animation that doesnt exist" );
 
 			var animation = _animations[animationKey];
 			animation.prepareForUse();
@@ -248,30 +235,25 @@ namespace Nez.Sprites
 			return animation;
 		}
 
-
 		public bool isAnimationPlaying( TEnum animationKey )
 		{
 			return _currentAnimation != null && _currentAnimationKey.Equals( animationKey );
 		}
-
 
 		public void pause()
 		{
 			isPlaying = false;
 		}
 
-
 		public void unPause()
 		{
 			isPlaying = true;
 		}
 
-
 		public void reverseAnimation()
 		{
 			_isReversed = !_isReversed;
 		}
-
 
 		public void stop()
 		{

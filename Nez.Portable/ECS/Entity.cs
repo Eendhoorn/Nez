@@ -8,6 +8,8 @@ namespace Nez
 {
 	public class Entity : IComparable<Entity>
 	{
+		static uint _idGenerator;
+
 		#region properties and fields
 
 		/// <summary>
@@ -21,15 +23,19 @@ namespace Nez
 		public string name;
 
 		/// <summary>
+		/// unique identifer for this Entity
+		/// </summary>
+		public readonly uint id;
+
+		/// <summary>
 		/// encapsulates the Entity's position/rotation/scale and allows setting up a hieararchy
 		/// </summary>
-        //readonly breaks json serialization references..
-		public Transform transform;
+		public readonly Transform transform;
 
 		/// <summary>
 		/// list of all the components currently attached to this entity
 		/// </summary>
-		public ComponentList components;
+		public readonly ComponentList components;
 
 		/// <summary>
 		/// use this however you want to. It can later be used to query the scene for all Entities with a specific tag
@@ -48,7 +54,6 @@ namespace Nez
 		/// <summary>
 		/// enables/disables the Entity. When disabled colliders are removed from the Physics system and components methods will not be called
 		/// </summary>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		public bool enabled
 		{
 			get { return _enabled; }
@@ -65,12 +70,17 @@ namespace Nez
 			set { setUpdateOrder( value ); }
 		}
 
-		internal BitSet componentBits;
+		/// <summary>
+		/// if destroy was called, this will be true until the next time Entitys are processed
+		/// </summary>
+		public bool isDestroyed => _isDestroyed;
 
 		/// <summary>
 		/// flag indicating if destroy was called on this Entity
 		/// </summary>
 		internal bool _isDestroyed;
+		
+		internal BitSet componentBits;
 
 		int _tag = 0;
 		bool _enabled = true;
@@ -159,20 +169,17 @@ namespace Nez
 			set { transform.setLocalScale( value ); }
 		}
 
-
 		public Matrix2D worldInverseTransform
 		{
 			[MethodImpl( MethodImplOptions.AggressiveInlining )]
 			get { return transform.worldInverseTransform; }
 		}
 
-
 		public Matrix2D localToWorldTransform
 		{
 			[MethodImpl( MethodImplOptions.AggressiveInlining )]
 			get { return transform.localToWorldTransform; }
 		}
-
 
 		public Matrix2D worldToLocalTransform
 		{
@@ -183,21 +190,19 @@ namespace Nez
 		#endregion
 
 
-		public Entity()
+		public Entity( string name )
 		{
 			components = new ComponentList( this );
 			transform = new Transform( this );
-
+			this.name = name;
+			id = _idGenerator++;
+			
 			if( Core.entitySystemsEnabled )
 				componentBits = new BitSet();
 		}
 
-
-		public Entity( string name ) : this()
-		{
-			this.name = name;
-		}
-
+		public Entity() : this( Utils.randomString( 8 ) )
+		{}
 
 		internal void onTransformChanged( Transform.Component comp )
 		{
@@ -229,7 +234,6 @@ namespace Nez
 			return this;
 		}
 
-
 		/// <summary>
 		/// sets the enabled state of the Entity. When disabled colliders are removed from the Physics system and components methods will not be called
 		/// </summary>
@@ -249,7 +253,6 @@ namespace Nez
 
 			return this;
 		}
-
 
 		/// <summary>
 		/// sets the update order of this Entity. updateOrder is also used to sort tag lists on scene.entities
@@ -291,7 +294,6 @@ namespace Nez
 			}
 		}
 
-
 		/// <summary>
 		/// detaches the Entity from the scene.
 		/// the following lifecycle method will be called on the Entity: onRemovedFromScene
@@ -305,7 +307,6 @@ namespace Nez
 			for( var i = 0; i < transform.childCount; i++ )
 				transform.getChild( i ).entity.detachFromScene();
 		}
-
 
 		/// <summary>
 		/// attaches an Entity that was previously detached to a new scene
@@ -321,11 +322,10 @@ namespace Nez
 				transform.getChild( i ).entity.attachToScene( newScene );
 		}
 
-
 		/// <summary>
 		/// creates a deep clone of this Entity. Subclasses can override this method to copy any custom fields. When overriding,
 		/// the copyFrom method should be called which will clone all Components, Colliders and Transform children for you. Note that cloned
-		/// objects will not be added to any Scene! You must add them yourself!
+		/// Entity will not be added to any Scene! You must add them yourself!
 		/// </summary>
 		public virtual Entity clone( Vector2 position = default( Vector2 ) )
 		{
@@ -336,7 +336,6 @@ namespace Nez
 
 			return entity;
 		}
-
 
 		/// <summary>
 		/// copies the properties, components and colliders of Entity to this instance
@@ -379,7 +378,6 @@ namespace Nez
 		public virtual void onAddedToScene()
 		{}
 
-
 		/// <summary>
 		/// Called when this entity is removed from a scene
 		/// </summary>
@@ -390,7 +388,6 @@ namespace Nez
 				components.removeAllComponents();
 		}
 
-
 		/// <summary>
 		/// called each frame as long as the Entity is enabled
 		/// </summary>
@@ -398,7 +395,6 @@ namespace Nez
 		{
 			components.update();
 		}
-
 
 		/// <summary>
 		/// called if Core.debugRenderEnabled is true by the default renderers. Custom renderers can choose to call it or not.
@@ -428,7 +424,6 @@ namespace Nez
 			return component;
 		}
 
-
 		/// <summary>
 		/// Adds a Component to the components list. Returns the Component.
 		/// </summary>
@@ -443,7 +438,6 @@ namespace Nez
 			return component;
 		}
 
-
 		/// <summary>
 		/// Gets the first component of type T and returns it. If no components are found returns null.
 		/// </summary>
@@ -454,21 +448,19 @@ namespace Nez
 			return components.getComponent<T>( false );
 		}
 
-
 		/// <summary>
 		/// Gets the first Component of type T and returns it. If no Component is found the Component will be created.
 		/// </summary>
 		/// <returns>The component.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T getOrCreateComponent<T>( bool onlyReturnInitializedComponents = true) where T : Component, new()
+		public T getOrCreateComponent<T>(bool lol = false) where T : Component, new()
 		{
-			var comp = components.getComponent<T>( onlyReturnInitializedComponents );
+			var comp = components.getComponent<T>( true );
 			if( comp == null )
 				comp = addComponent<T>();
 
 			return comp;
 		}
-
 
 		/// <summary>
 		/// Gets the first component of type T and returns it optionally skips checking un-initialized Components (Components who have not yet had their
@@ -482,7 +474,6 @@ namespace Nez
 			return components.getComponent<T>( onlyReturnInitializedComponents );
 		}
 
-
 		/// <summary>
 		/// Gets all the components of type T without a List allocation
 		/// </summary>
@@ -493,7 +484,6 @@ namespace Nez
 			components.getComponents( componentList );
 		}
 
-
 		/// <summary>
 		/// Gets all the components of type T. The returned List can be put back in the pool via ListPool.free.
 		/// </summary>
@@ -503,15 +493,6 @@ namespace Nez
 		{
 			return components.getComponents<T>();
 		}
-
-        public List<Component> getComponents( bool includeUnAdded)
-        {
-            List<Component> list = new List<Component>(components._components.buffer);
-            if( includeUnAdded) list.AddRange( components._componentsToAdd );
-
-            return list;
-        }
-
 
 		/// <summary>
 		/// removes the first Component of type T from the components list
@@ -529,7 +510,6 @@ namespace Nez
 			return false;
 		}
 
-
 		/// <summary>
 		/// removes a Component from the components list
 		/// </summary>
@@ -538,7 +518,6 @@ namespace Nez
 		{
 			components.remove( component );
 		}
-
 
 		/// <summary>
 		/// removes all Components from the Entity
@@ -552,57 +531,13 @@ namespace Nez
 		#endregion
 
 
-		#region Collider management
-
-		[Obsolete( "Colliders are now Components. Use addComponent instead." )]
-		public T addCollider<T>( T collider ) where T : Collider
-		{
-			return addComponent( collider );
-		}
-
-
-		[Obsolete( "Colliders are now Components. Use removeComponent instead." )]
-		public void removeCollider( Collider collider )
-		{
-			removeComponent( collider );
-		}
-
-
-		[Obsolete( "Colliders are now Components. Use the normal Component methods to manage Colliders." )]
-		public void removeAllColliders()
-		{
-			throw new NotImplementedException();
-		}
-
-
-		[Obsolete( "Colliders are now Components. Use the normal Component methods to manage Colliders." )]
-		public T getCollider<T>( bool onlyReturnInitializedColliders = false ) where T : Collider
-		{
-			return getComponent<T>( onlyReturnInitializedColliders );
-		}
-
-
-		[Obsolete( "Colliders are now Components. Use the normal Component methods to manage Colliders." )]
-		public void getColliders( List<Collider> colliders )
-		{
-			getComponents( colliders );
-		}
-
-
-		[Obsolete( "Colliders are now Components. Use the normal Component methods to manage Colliders." )]
-		public List<Collider> getColliders()
-		{
-			return getComponents<Collider>();
-		}
-
-		#endregion
-
-
 		public int CompareTo( Entity other )
 		{
-			return _updateOrder.CompareTo( other._updateOrder );
+			var compare = _updateOrder.CompareTo( other._updateOrder );
+			if( compare == 0 )
+				compare = id.CompareTo( other.id );
+			return compare;
 		}
-
 
 		public override string ToString()
 		{

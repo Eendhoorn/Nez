@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 
 namespace Nez
@@ -21,7 +20,7 @@ namespace Nez
 		/// <summary>
 		/// how fast the camera closes the distance to the target position
 		/// </summary>
-		public float followLerp = 0.2f;
+		public float followLerp = 0.1f;
 
 		/// <summary>
 		/// when in CameraWindow mode the width/height is used as a bounding box to allow movement within it without moving the camera.
@@ -59,10 +58,11 @@ namespace Nez
 			this.camera = camera;
 		}
 
-
 		public FollowCamera( Entity targetEntity, CameraStyle cameraStyle = CameraStyle.LockOn ) : this( targetEntity, null, cameraStyle )
 		{}
 
+		public FollowCamera() : this( null, null )
+		{}
 
 		public override void onAddedToEntity()
 		{
@@ -75,12 +75,10 @@ namespace Nez
 			Core.emitter.addObserver( CoreEvents.GraphicsDeviceReset, onGraphicsDeviceReset );
 		}
 
-
 		public override void onRemovedFromEntity()
 		{
 			Core.emitter.removeObserver( CoreEvents.GraphicsDeviceReset, onGraphicsDeviceReset );
 		}
-
 
 		void IUpdatable.update()
 		{
@@ -104,7 +102,6 @@ namespace Nez
 			}
 		}
 
-
 		/// <summary>
 		/// Clamps the camera so it never leaves the visible area of the map.
 		/// </summary>
@@ -118,7 +115,6 @@ namespace Nez
 			return Vector2.Clamp( position, halfScreen, cameraMax );
 		}
 
-
         public override void debugRender( Graphics graphics )
 		{
 			if( _cameraStyle == CameraStyle.LockOn )
@@ -126,7 +122,6 @@ namespace Nez
 			else
 				graphics.batcher.drawHollowRect( _worldSpaceDeadzone, Color.DarkRed );
 		}
-
 
 		void onGraphicsDeviceReset()
 		{
@@ -137,7 +132,6 @@ namespace Nez
 				self.follow( self._targetEntity, self._cameraStyle );
 			} );
 		}
-
 
 		void updateFollow()
 		{
@@ -188,7 +182,6 @@ namespace Nez
 			}
 		}
 
-
 		public void follow( Entity targetEntity, CameraStyle cameraStyle = CameraStyle.CameraWindow )
 		{
 			_targetEntity = targetEntity;
@@ -208,7 +201,6 @@ namespace Nez
 			}
 		}
 
-
 		/// <summary>
 		/// sets up the deadzone centered in the current cameras bounds with the given size
 		/// </summary>
@@ -216,7 +208,7 @@ namespace Nez
 		/// <param name="height">Height.</param>
 		public void setCenteredDeadzone( int width, int height )
 		{
-			Assert.isFalse( camera == null, "camera is null. We cant get its bounds if its null. Either set it or wait until after this Component is added to the Entity." );
+			Insist.isFalse( camera == null, "camera is null. We cant get its bounds if its null. Either set it or wait until after this Component is added to the Entity." );
 			var cameraBounds = camera.bounds;
 			deadzone = new RectangleF( ( cameraBounds.width - width ) / 2, ( cameraBounds.height - height ) / 2, width, height );
 		}
