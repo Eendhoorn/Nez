@@ -453,9 +453,9 @@ namespace Nez
 		/// </summary>
 		/// <returns>The component.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T getOrCreateComponent<T>(bool lol = false) where T : Component, new()
+		public T getOrCreateComponent<T>( bool onlyReturnInitializedComponents = true) where T : Component, new()
 		{
-			var comp = components.getComponent<T>( true );
+			var comp = components.getComponent<T>( onlyReturnInitializedComponents );
 			if( comp == null )
 				comp = addComponent<T>();
 
@@ -493,6 +493,15 @@ namespace Nez
 		{
 			return components.getComponents<T>();
 		}
+
+        public List<Component> getComponents( bool includeUnAdded)
+        {
+            List<Component> list = new List<Component>(components._components.buffer);
+            if( includeUnAdded) list.AddRange( components._componentsToAdd );
+
+            return list;
+        }
+
 
 		/// <summary>
 		/// removes the first Component of type T from the components list

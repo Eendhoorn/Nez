@@ -113,6 +113,7 @@ namespace Nez.Tiled
 		}
 
 
+
 		public override void draw( Batcher batcher, Vector2 position, Vector2 scale, float layerDepth, RectangleF cameraClipBounds )
 		{
 			// offset it by the entity position since the tilemap will always expect positions in its own coordinate space
@@ -476,5 +477,5 @@ namespace Nez.Tiled
 			return null;
 		}
 
-	}
+    }
 }

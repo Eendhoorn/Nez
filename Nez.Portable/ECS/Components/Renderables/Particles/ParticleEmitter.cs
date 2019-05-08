@@ -65,6 +65,12 @@ namespace Nez.Particles
 		[Inspectable]
 		ParticleEmitterConfig _emitterConfig;
 
+        public bool emitting
+        {
+            get { return _emitting; }
+            set { _emitting = value; }
+        }
+
 
 		public ParticleEmitter() : this( new ParticleEmitterConfig() )
 		{}

@@ -11,7 +11,7 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<RootNamespace>Nez</RootNamespace>
 		<AssemblyName>Nez</AssemblyName>
-		<TargetFramework>net45</TargetFramework>
+		<TargetFramework>net471</TargetFramework>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<NoWarn>1591,1570,1572,1573</NoWarn>
 		<IntermediateOutputPath>obj\Nez\$(Configuration)</IntermediateOutputPath>

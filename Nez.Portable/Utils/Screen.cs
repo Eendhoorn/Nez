@@ -6,7 +6,7 @@ namespace Nez
 {
 	public static class Screen
 	{
-		static public GraphicsDeviceManager _graphicsManager;
+		static internal GraphicsDeviceManager _graphicsManager;
 
 		internal static void initialize( GraphicsDeviceManager graphicsManager ) => _graphicsManager = graphicsManager;
 

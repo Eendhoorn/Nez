@@ -27,6 +27,13 @@ namespace Nez.Sprites
 		}
 
 		Dictionary<TEnum, SpriteAnimation> _animations;
+        public Dictionary<TEnum,SpriteAnimation> animations
+        {
+            get
+            {
+                return _animations;
+            }
+        }
 
 		// playback state
 		SpriteAnimation _currentAnimation;
