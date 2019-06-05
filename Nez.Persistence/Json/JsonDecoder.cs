@@ -537,7 +537,7 @@ namespace Nez.Persistence
 			var property = _cacheResolver.GetProperty( obj.GetType(), key );
 			if( property != null )
 			{
-				if( property != null && property.CanWrite && property.IsDefined( JsonConstants.includeAttrType ) )
+				if( property != null && property.CanWrite )//&& property.IsDefined( JsonConstants.includeAttrType ) )
 				{
 					var value = DecodeValue( GetNextToken(), property.PropertyType );
 					if( obj.GetType().IsValueType )
@@ -558,10 +558,23 @@ namespace Nez.Persistence
 			// we still need to eat the value even if we didnt set it so the parser is in the right spot
 			var orhpanedValue = DecodeValueUntyped( GetNextToken() );
 
+            //edge case - value is a reference
+            /*if( orhpanedValue is Dictionary<string, object>)
+            {
+                Dictionary<string, object> dict = orhpanedValue as Dictionary<string, object>;
+                if( dict.ContainsKey("@ref"))
+                {
+                    if( field != null)
+                        field.SetValue( obj, _cacheResolver.ResolveReference(dict["@ref"] as string ));
+                    if (property != null)
+                        property.SetValue(obj, _cacheResolver.ResolveReference(dict["@ref"] as string));
+                }
+            }*/
+
 			// check for a JsonConverter and use it if we have one
 			var converter = _settings?.GetTypeConverterForType( obj.GetType() );
 			if( converter != null && converter.CanRead )
-			{
+			{   
 				converter.OnFoundCustomData( obj, key, orhpanedValue );
 			}
 		}
@@ -859,7 +872,14 @@ namespace Nez.Persistence
 								}
 
 								obj = _cacheResolver.CreateInstance( makeType );
-								break;
+
+                                if (id != null)
+                                {
+                                    _cacheResolver.TrackReference(id, obj);
+                                    id = null;
+                                }
+
+                                break;
 							}
 
 							// if obj is still null we need to create it

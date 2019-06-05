@@ -30,7 +30,7 @@ namespace Nez
 		/// <summary>
 		/// encapsulates the Entity's position/rotation/scale and allows setting up a hieararchy
 		/// </summary>
-		public readonly Transform transform;
+		public /*readonly*/ Transform transform;
 
 		/// <summary>
 		/// list of all the components currently attached to this entity

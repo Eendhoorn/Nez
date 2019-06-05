@@ -30,7 +30,7 @@ namespace Nez
 		/// <summary>
 		/// the Entity associated with this transform
 		/// </summary>
-		public readonly Entity entity;
+		public /*readonly*/ Entity entity;
 
 		/// <summary>
 		/// the parent Transform of this Transform

@@ -76,7 +76,21 @@ namespace Nez.Persistence
 				return constructor.Invoke( null );
 
 			constructor = type.GetConstructor( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null );
-			_constructorCache[type] = constructor;
+
+            if( constructor == null)
+            {
+                //return Activator.CreateInstance(type);
+
+                //no empty constructor, check other constructors with already decoded types
+                ConstructorInfo[] constructors = type.GetConstructors();
+                foreach(ConstructorInfo constructorInfo in constructors)
+                {
+                     //constructorInfo.GetParameters()[0]
+                }
+            }
+
+
+            _constructorCache[type] = constructor;
 			return constructor.Invoke( null );
 		}
 

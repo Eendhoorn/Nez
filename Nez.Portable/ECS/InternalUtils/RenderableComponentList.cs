@@ -102,7 +102,7 @@ namespace Nez
 				_components.sort( compareUpdatableOrder );
 				_componentsNeedSort = false;
 			}
-
+            
 			if( _unsortedRenderLayers.Count > 0 )
 			{
 				for( int i = 0, count = _unsortedRenderLayers.Count; i < count; i++ )
