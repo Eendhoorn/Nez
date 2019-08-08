@@ -63,7 +63,7 @@ namespace Nez.Particles
 		List<Particle> _particles;
 		bool _playOnAwake;
 		[Inspectable]
-		ParticleEmitterConfig _emitterConfig;
+		public ParticleEmitterConfig _emitterConfig;
 
         public bool emitting
         {

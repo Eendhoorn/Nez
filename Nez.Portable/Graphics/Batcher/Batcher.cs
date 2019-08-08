@@ -63,6 +63,10 @@ namespace Nez
 
 		// User-provided Effect, if applicable
 		Effect _customEffect;
+        public Effect currentEffect
+        {
+            get { return _customEffect; }
+        }
 
 		#endregion
 
@@ -472,8 +476,48 @@ namespace Nez
 			);
 		}
 
+        public void draw(
+            Subtexture subtexture,
+            Vector2 position,
+            Color color,
+            float rotation,
+            Vector2 origin,
+            Vector2 scale,
+            SpriteEffects effects,
+            float layerDepth,
+            Material material
+        )
+        {
+            checkBegin();
+            if( material != null || (material == null && _customEffect != null))//_customEffect)
+            {
+                end();
+                begin(material, _transformMatrix);
+            }
+           
+            pushSprite(
+                subtexture,
+                position.X,
+                position.Y,
+                scale.X,
+                scale.Y,
+                color,
+                origin,
+                rotation,
+                layerDepth,
+                (byte)(effects & (SpriteEffects)0x03),
+                0, 0, 0, 0
+            );
 
-		public void draw(
+            if(material != null || (material == null && _customEffect != null))//_customEffect)
+            {
+                end();
+                begin(_transformMatrix);
+            }
+        }
+
+
+        public void draw(
 			Texture2D texture,
 			Vector2 position,
 			Rectangle? sourceRectangle,

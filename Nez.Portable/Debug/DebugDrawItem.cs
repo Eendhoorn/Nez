@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Nez.BitmapFonts;
 using Microsoft.Xna.Framework.Graphics;
-
+using Nez.PhysicsShapes;
 
 namespace Nez
 {
@@ -15,13 +15,16 @@ namespace Nez
 			Pixel,
 			BitmapFontText,
 			SpriteFontText,
-			ConsoleText
+			ConsoleText,
+            Polygon
 		}
 
 		// used for Line items
 		public Vector2 start;
 		public Vector2 end;
 		public Rectangle rectangle;
+
+        public Polygon polygon;
 
 		// used for Text items
 		public string text;
@@ -60,7 +63,16 @@ namespace Nez
 		}
 
 
-		public DebugDrawItem( float x, float y, int size, Color color, float duration )
+        public DebugDrawItem(Polygon polygon, Color color, float duration)
+        {
+            this.polygon = polygon;
+            this.color = color;
+            this.duration = duration;
+            drawType = DebugDrawType.Polygon;
+        }
+
+
+        public DebugDrawItem( float x, float y, int size, Color color, float duration )
 		{
 			this.x = x;
 			this.y = y;
@@ -109,7 +121,7 @@ namespace Nez
 		/// <summary>
 		/// returns true if we are done with this debug draw item
 		/// </summary>
-		public bool draw( Graphics graphics )
+		public virtual bool draw( Graphics graphics )
 		{
 			switch( drawType )
 			{
@@ -131,6 +143,9 @@ namespace Nez
 				case DebugDrawType.ConsoleText:
 					graphics.batcher.drawString( bitmapFont, text, position, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f );
 					break;
+                case DebugDrawType.Polygon:
+                    graphics.batcher.drawPolygon(polygon.position, polygon.points, color);
+                    break;
 			}
 
 			duration -= Time.deltaTime;
@@ -154,6 +169,8 @@ namespace Nez
 					return bitmapFont.measureString( text ).Y * scale;
 				case DebugDrawType.SpriteFontText:
 					return spriteFont.measureString( text ).Y * scale;
+                case DebugDrawType.Polygon:
+                    return polygon.bounds.height;
 			}
 
 			return 0;

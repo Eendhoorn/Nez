@@ -51,7 +51,7 @@ namespace Nez
 		/// full area in which we will be rendering
 		/// </summary>
 		Rectangle _finalRenderRect;
-		Rectangle[] _destRects = new Rectangle[9];
+		protected Rectangle[] _destRects = new Rectangle[9];
 		bool _destRectsDirty = true;
 
 

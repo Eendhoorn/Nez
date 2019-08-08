@@ -13,6 +13,7 @@ namespace Nez.UI
 		public Color? tintColor;
 
 		public SpriteEffects spriteEffects = SpriteEffects.None;
+        public Material material;
 
 		/// <summary>
 		/// determines if the sprite should be rendered normally or flipped horizontally

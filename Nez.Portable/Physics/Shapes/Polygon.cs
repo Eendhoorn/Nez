@@ -15,7 +15,7 @@ namespace Nez.PhysicsShapes
 		/// edge normals are used for SAT collision detection. We cache them to avoid the squareroots. Note that Boxes will only have
 		/// 2 edgeNormals since the other two sides are parallel.
 		/// </summary>
-		public Vector2[] edgeNormals
+		public virtual Vector2[] edgeNormals
 		{
 			get
 			{
@@ -25,15 +25,23 @@ namespace Nez.PhysicsShapes
 			}
 		}
 
-		bool _areEdgeNormalsDirty = true;
+		protected bool _areEdgeNormalsDirty = true;
 		public Vector2[] _edgeNormals;
 
 		// we cache the original details of our polygon
 		internal Vector2[] _originalPoints;
 		internal Vector2 _polygonCenter;
 
+        public Vector2 polygonCenter
+        {
+            get
+            {
+                return _polygonCenter;
+            }
+        }
+
 		// used as an optimization for unrotated Box collisions
-		internal bool isBox;
+		internal protected bool isBox;
 		public bool isUnrotated = true;
 
 
@@ -87,7 +95,7 @@ namespace Nez.PhysicsShapes
 		/// <summary>
 		/// builds the Polygon edge normals. These are lazily created and updated only by the edgeNormals getter
 		/// </summary>
-		void buildEdgeNormals()
+		protected virtual void buildEdgeNormals()
 		{
 			// for boxes we only require 2 edges since the other 2 are parallel
 			var totalEdges = isBox ? 2 : points.Length;

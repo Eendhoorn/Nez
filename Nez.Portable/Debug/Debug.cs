@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Nez.BitmapFonts;
-
+using Nez.PhysicsShapes;
 
 namespace Nez
 {
@@ -212,8 +212,16 @@ namespace Nez
 			_debugDrawItems.Add( new DebugDrawItem( rectangle, color, duration ) );
 		}
 
+        [Conditional("DEBUG")]
+        public static void drawHollowPolygon(Polygon polygon, Color color, float duration = 0f)
+        {
+            if (!Core.debugRenderEnabled)
+                return;
+            _debugDrawItems.Add(new DebugDrawItem(polygon, color, duration));
+        }
 
-		[Conditional( "DEBUG" )]
+
+        [Conditional( "DEBUG" )]
 		public static void drawHollowBox( Vector2 center, int size, Color color, float duration = 0f )
 		{
 			if( !Core.debugRenderEnabled )
