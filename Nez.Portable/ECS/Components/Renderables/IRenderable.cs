@@ -92,9 +92,10 @@ namespace Nez
 				res = other.layerDepth.CompareTo( self.layerDepth );
 				if( res == 0 )
 				{
-					// both null or equal
-					if( ReferenceEquals( self.material, other.material ) )
-						return 0;
+                    // both null or equal
+                    //if( CheckEqual(self.material, other.material))//ReferenceEquals( self.material, other.material ) )
+                    //return 0;
+                    return CompareMaterial(self.material, other.material);
 
 					if( other.material == null )
 						return -1;
@@ -104,6 +105,29 @@ namespace Nez
 			}
 			return res;
 		}
+
+        //check if 2 materials are equal, material can overload equals to determine wether they can be batched, when using different
+        //parameter values for example
+        bool CheckEqual(Material self, Material other)
+        {
+            if (self == null && other != null || (other == null && self != null )) return false;
+            if (self == null && other == null)
+                return true;
+
+            if (self.Equals(other))
+                return true;
+
+            return false;
+        }
+
+        int CompareMaterial(Material self, Material other)
+        {
+            if (self == null && other == null) return 0;
+            if (self == null && other != null) return 1;
+            if (self != null && other == null) return -1;
+
+            return self.CompareTo(other);
+        }
 	}
 
 }

@@ -186,10 +186,10 @@ namespace Nez.Sprites
 			color = originalColor;
 			_layerDepth = originalLayerDepth;
 		}
-
+       
 		public override void render( Graphics graphics, Camera camera )
 		{
-			graphics.batcher.draw( _subtexture, entity.transform.position + localOffset, color, entity.transform.rotation, origin, entity.transform.scale, spriteEffects, _layerDepth, material);
+			graphics.batcher.draw( _subtexture, entity.transform.position + localOffset, color, entity.transform.rotation, origin, entity.transform.scale, spriteEffects, _layerDepth);
 		}
 
 	}

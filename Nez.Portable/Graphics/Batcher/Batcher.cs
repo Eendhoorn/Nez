@@ -489,7 +489,9 @@ namespace Nez
         )
         {
             checkBegin();
-            if( material != null || (material == null && _customEffect != null))//_customEffect)
+
+            bool differentMaterial = material != null && _customEffect != null && !_customEffect.Equals(material.effect) || (_customEffect == null && material != null);
+            if (differentMaterial)
             {
                 end();
                 begin(material, _transformMatrix);
@@ -509,7 +511,7 @@ namespace Nez
                 0, 0, 0, 0
             );
 
-            if(material != null || (material == null && _customEffect != null))//_customEffect)
+            if(differentMaterial)
             {
                 end();
                 begin(_transformMatrix);

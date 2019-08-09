@@ -125,7 +125,7 @@ namespace Nez
 		protected void renderAfterStateCheck( IRenderable renderable, Camera cam )
 		{
 			// check for Material changes
-			if( renderable.material != null && renderable.material != _currentMaterial )
+			if( renderable.material != null && !renderable.material.Equals(_currentMaterial) )
 			{
 				_currentMaterial = renderable.material;
 				if( _currentMaterial.effect != null )

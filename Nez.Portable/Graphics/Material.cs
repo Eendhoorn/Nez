@@ -292,7 +292,7 @@ namespace Nez
 		/// </summary>
 		/// <returns>The to.</returns>
 		/// <param name="other">Other.</param>
-		public int CompareTo( Material other )
+		public virtual int CompareTo( Material other )
 		{
 			if( object.ReferenceEquals( other, null ) )
 				return 1;
