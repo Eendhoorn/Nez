@@ -14,7 +14,11 @@ namespace Nez.TexturePackerImporter
 		[DefaultValue( false )]
 		public bool parseAnimations { get; set; } = false;
 
-		public override TexturePackerFile Process( TexturePackerFile input, ContentProcessorContext context )
+        [Description("the amount of characters used to indicated the frame (_001 graphicsgale, 1 aseprite")]
+        [DefaultValue(4)]
+        public int frameNumLength { get; set; } = 4;
+
+        public override TexturePackerFile Process( TexturePackerFile input, ContentProcessorContext context )
 		{
 			logger = context.Logger;
 
@@ -35,7 +39,7 @@ namespace Nez.TexturePackerImporter
 				var rawFileName = region.filename.Split( '.' )[0];
 
 				// texturepacker always ends the filename's frame with 4 digits
-				var animationName = rawFileName.Substring( 0, rawFileName.Length - 4 );
+				var animationName = rawFileName.Substring( 0, rawFileName.Length - frameNumLength );
 				if( input.spriteAnimationDetails.ContainsKey( animationName ) == false )
 				{
 					logger.LogMessage( "found new animation [{0}]", animationName );
