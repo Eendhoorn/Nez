@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Nez.PhysicsShapes;
-
+using Nez.Sprites;
+using Nez.Tweens;
 
 namespace Nez.Particles
 {
@@ -17,12 +18,13 @@ namespace Nez.Particles
 
 		internal Vector2 position;
 		internal Vector2 spawnPosition;
-		Vector2 _direction;
+		public Vector2 _direction;
 		internal Color color;
 		// stored at particle creation time and used for lerping the color
 		Color _startColor;
 		// stored at particle creation time and used for lerping the color
 		Color _finishColor;
+
 		internal float rotation;
 		float _rotationDelta;
 		float _radialAcceleration;
@@ -32,34 +34,45 @@ namespace Nez.Particles
 		float _angle;
 		float _degreesPerSecond;
 		internal float particleSize;
+        public Vector2 scale = Vector2.One;
 		float _particleSizeDelta;
 		float _timeToLive;
 		// stored at particle creation time and used for lerping the color
 		float _particleLifetime;
+        internal int subTextureID = 0;
 
 		/// <summary>
 		/// flag indicating if this particle has already collided so that we know not to move it in the normal fashion
 		/// </summary>
 		bool _collided;
 		Vector2 _velocity;
-        internal Vector2 parallaxVariance = Vector2.Zero;
+        internal Vector2 parallax = Vector2.Zero;
+        internal Vector2 cameraAnchor = Vector2.Zero;
 
         internal int animationFrame = 0;
+        internal int currentAnimation = 0;
 
         public void initialize( ParticleEmitterConfig emitterConfig, Vector2 spawnPosition )
 		{
 			_collided = false;
 
-			// init the position of the Particle. This is based on the source position of the particle emitter
-			// plus a configured variance. The Random.minusOneToOne method allows the number to be both positive
-			// and negative
-			position.X = emitterConfig.sourcePositionVariance.X * Random.minusOneToOne();
-			position.Y = emitterConfig.sourcePositionVariance.Y * Random.minusOneToOne();
+            // init the position of the Particle. This is based on the source position of the particle emitter
+            // plus a configured variance. The Random.minusOneToOne method allows the number to be both positive
+            // and negative
+            subTextureID = emitterConfig.subTextures == null ? 0 : Random.range( 0 , emitterConfig.subTextures.Count );
+			position.X =  emitterConfig.sourcePosition.X + emitterConfig.sourcePositionVariance.X * Random.minusOneToOne();
+			position.Y = emitterConfig.sourcePosition.Y + emitterConfig.sourcePositionVariance.Y * Random.minusOneToOne();
 
-            parallaxVariance = ( Random.minusOneToOne() * emitterConfig.parallaxVariance );
+            cameraAnchor = Vector2.Zero;
 
+            parallax = emitterConfig.parallax + ( Random.minusOneToOne() * emitterConfig.parallaxVariance );
+            
+
+            if( emitterConfig.animations != null && emitterConfig.animations.Count > 0) 
+                currentAnimation = Nez.Random.range(0, emitterConfig.animations.Count);
 
             this.spawnPosition = spawnPosition;
+            this.scale = emitterConfig.scale;
 
 			// init the direction of the   The newAngle is calculated using the angle passed in and the
 			// angle variance.
@@ -71,9 +84,9 @@ namespace Nez.Particles
 			// calculate the vectorSpeed using the speed and speedVariance which has been passed in
 			var vectorSpeed = emitterConfig.speed + emitterConfig.speedVariance * Random.minusOneToOne();
 
-			// the particles direction vector is calculated by taking the vector calculated above and
-			// multiplying that by the speed
-			_direction = vector * vectorSpeed;
+            // the particles direction vector is calculated by taking the vector calculated above and
+            // multiplying that by the speed
+            _direction = vector * vectorSpeed;
 
 			// calculate the particles life span using the life span and variance passed in
 			_timeToLive = MathHelper.Max( 0, emitterConfig.particleLifespan + emitterConfig.particleLifespanVariance * Random.minusOneToOne() );
@@ -97,10 +110,19 @@ namespace Nez.Particles
 			_particleSizeDelta = ( particleFinishSize - particleStartSize ) / _timeToLive;
 			particleSize = MathHelper.Max( 0, particleStartSize );
 
+            if (emitterConfig.scaleBySpeed)
+            {
+                float maxSpeed = emitterConfig.speed + emitterConfig.speedVariance;
+                float minSpeed = emitterConfig.speed - emitterConfig.speedVariance;
 
-			// calculate the color the particle should have when it starts its life. All the elements
-			// of the start color passed in along with the variance are used to calculate the start color
-			_startColor = new Color
+                float scale = Mathf.map(vectorSpeed, minSpeed, maxSpeed, emitterConfig.maxSpeedScale, emitterConfig.minSpeedScale);
+                particleSize *= scale;
+            }
+
+
+            // calculate the color the particle should have when it starts its life. All the elements
+            // of the start color passed in along with the variance are used to calculate the start color
+            _startColor = new Color
 			(
 				(int)( emitterConfig.startColor.R + emitterConfig.startColorVariance.R * Random.minusOneToOne() ),
 				(int)( emitterConfig.startColor.G + emitterConfig.startColorVariance.G * Random.minusOneToOne() ),
@@ -184,7 +206,14 @@ namespace Nez.Particles
 
 				// update the particles color. we do the lerp from finish-to-start because timeToLive counts from particleLifespan to 0
 				var t = ( _particleLifetime - _timeToLive ) / _particleLifetime;
-				ColorExt.lerp( ref _startColor, ref _finishColor, out color, t );
+                var rt = t;
+                if( emitterConfig.colorLoopType == LoopType.PingPong)
+                {
+                    rt = t * 2;
+                    if (rt > 1) rt = 1.5f - t;
+                }
+                
+				ColorExt.lerp( ref _startColor, ref _finishColor, out color, rt );
 
 				// update the particle size
 				particleSize += _particleSizeDelta * Time.deltaTime;
@@ -194,20 +223,47 @@ namespace Nez.Particles
 				rotation += _rotationDelta * Time.deltaTime;
 
                 //update animation
-                if ( emitterConfig.animation != null )
+                if ( emitterConfig.animations != null && emitterConfig.animations.Count > 0)
                 {
                     var desiredFrame = 0;
                     if( emitterConfig.animationByLifetime )
-                        desiredFrame = Mathf.fastFloorToInt(t * emitterConfig.animation.frames.Count);
+                        desiredFrame = Mathf.fastFloorToInt(t * emitterConfig.animations[currentAnimation].frames.Count);
                     else
-                        Mathf.fastFloorToInt( (_particleLifetime - _timeToLive ) / emitterConfig.animation.secondsPerFrame );
+                        desiredFrame = Mathf.fastFloorToInt( (/*_particleLifetime -*/ _timeToLive ) / emitterConfig.animations[currentAnimation].secondsPerFrame );
 
                     if ( desiredFrame != animationFrame )
                     {
                         animationFrame = (int)desiredFrame;
-                        if ( animationFrame >= emitterConfig.animation.frames.Count ) animationFrame = animationFrame % emitterConfig.animation.frames.Count;
+                        if ( animationFrame >= emitterConfig.animations[currentAnimation].frames.Count )
+                            animationFrame = animationFrame % emitterConfig.animations[currentAnimation].frames.Count;
                     }
                 }
+
+                //scaling by values
+                if( emitterConfig.alphaByParallax) color.A = (byte) Math.Min(255, 255 + (parallax.X * 255));
+                if (emitterConfig.parallaxScaleFactor == 0) emitterConfig.parallaxScaleFactor = 1; //temp fix for unserialized values
+                if (emitterConfig.scaleByParallax)
+                {
+                    particleSize = 1 + (parallax.X * emitterConfig.startParticleSize * emitterConfig.parallaxScaleFactor);
+                }
+                if( emitterConfig.parallaxByScale)
+                {
+                    parallax.X = (particleSize * emitterConfig.parallaxScaleFactor);
+                }
+
+                //flip with velocity
+                /*if( emitterConfig.bounds.width != 0 && emitterConfig.bounds.height != 0 )
+                {
+                    if( emitterConfig.boundsBehaviour == PARTICLE_BOUNDS_BEHAVIOUR.REFLECT)
+                    {
+                        if ( position.X < emitterConfig.bounds.left ) _velocity.X = Math.Abs( _velocity.X );
+                        else if ( position.X > emitterConfig.bounds.right ) _velocity.X = -Math.Abs( _velocity.X );
+                        if ( position.Y < emitterConfig.bounds.top ) _velocity.Y = Math.Abs( _velocity.Y );
+                        else if ( position.Y > emitterConfig.bounds.bottom ) _velocity.Y = -Math.Abs( _velocity.Y );
+                    }
+                }*/
+
+                //
 
                 if ( collisionConfig.enabled )
 				{

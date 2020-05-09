@@ -86,6 +86,11 @@ namespace Nez
 			set => _graphicsManager.SupportedOrientations = value;
 		}
 
+        public static void SetHardwareSwitchMode(bool value)
+        {
+            _graphicsManager.HardwareModeSwitch = value;
+        }
+
 		public static void applyChanges() => _graphicsManager.ApplyChanges();
 
 		/// <summary>

@@ -393,13 +393,21 @@ namespace Nez.UI
 			return _selectBoxList.listBox;
 		}
 
-
-		/// <summary>
-		/// Disables scrolling of the list shown when the select box is open.
+        /// <summary>
+		/// Returns the ListBox shown when the select box is open
 		/// </summary>
-		/// <returns>The scrolling disabled.</returns>
-		/// <param name="y">The y coordinate.</param>
-		public void setScrollingDisabled( bool y )
+		/// <returns>The list.</returns>
+		public SelectBoxList<T> getListBoxList()
+        {
+            return _selectBoxList;
+        }
+
+        /// <summary>
+        /// Disables scrolling of the list shown when the select box is open.
+        /// </summary>
+        /// <returns>The scrolling disabled.</returns>
+        /// <param name="y">The y coordinate.</param>
+        public void setScrollingDisabled( bool y )
 		{
 			_selectBoxList.setScrollingDisabled( true, y );
 			invalidateHierarchy();

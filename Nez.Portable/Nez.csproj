@@ -26,6 +26,10 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Content\NezDefaultBMFont.xnb" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\Libraries\JsonNet\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj" />
+	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Net.Http" />
 	</ItemGroup>

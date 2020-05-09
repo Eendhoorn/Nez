@@ -358,10 +358,6 @@ namespace Nez
 			if( localPosition == _localPosition )
 				return this;
 
-            if(_localPosition.Y == 8.5)
-            {
-                int bp = 0;
-            }
 			_localPosition = localPosition;
 			_localDirty = _positionDirty = _localPositionDirty = _localRotationDirty = _localScaleDirty = true;
 			setDirty( DirtyType.PositionDirty );

@@ -54,6 +54,13 @@ namespace Nez
 		protected HorizontalAlign _horizontalAlign;
 		protected VerticalAlign _verticalAlign;
 		protected IFont _font;
+        public IFont font
+        {
+            get
+            {
+                return _font;
+            }
+        }
 		protected string _text;
 		Vector2 _size;
 

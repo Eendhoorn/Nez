@@ -45,10 +45,15 @@ namespace Nez.BitmapFonts
 			}
 		}
 
-		/// <summary>
-		/// populated with ' ' by default and reset whenever defaultCharacter is set
-		/// </summary>
-		public BitmapFontRegion defaultCharacterRegion;
+        public string name
+        {
+            set;get;
+        }
+
+        /// <summary>
+        /// populated with ' ' by default and reset whenever defaultCharacter is set
+        /// </summary>
+        public BitmapFontRegion defaultCharacterRegion;
 
 		/// <summary>
 		/// this sucker gets used a lot so we cache it to avoid having to create it every frame
@@ -61,7 +66,7 @@ namespace Nez.BitmapFonts
 		public readonly int spaceWidth;
 
 
-		readonly Dictionary<char,BitmapFontRegion> _characterMap;
+		public readonly Dictionary<char,BitmapFontRegion> _characterMap;
 
 
 		class CharComparer : IEqualityComparer<char>

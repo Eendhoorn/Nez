@@ -14,7 +14,7 @@ namespace Nez.UI
 		Element _previousScrollFocus;
 		Vector2 _screenPosition;
 		bool _isListBelowSelectBox;
-
+        public bool listBelow = true;
 
 		public SelectBoxList( SelectBox<T> selectBox ) : base( null, selectBox.getStyle().scrollStyle )
 		{
@@ -73,7 +73,7 @@ namespace Nez.UI
 				}
 			}
 
-			if( !_isListBelowSelectBox )
+			if( !_isListBelowSelectBox || !listBelow)
 				setY( _screenPosition.Y - height );
 			else
 				setY( _screenPosition.Y + _selectBox.getHeight() );

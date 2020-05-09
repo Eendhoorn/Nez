@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,7 @@ namespace Nez.Particles
 		/// convenience method for setting ParticleEmitterConfig.simulateInWorldSpace. If true, particles will simulate in world space. ie when the
 		/// parent Transform moves it will have no effect on any already active Particles.
 		/// </summary>
+        [JsonIgnore]
 		public bool simulateInWorldSpace
 		{
 			set => _emitterConfig.simulateInWorldSpace = value;
@@ -61,7 +63,10 @@ namespace Nez.Particles
 		/// </summary>
 		bool _emitting;
 		List<Particle> _particles;
-		bool _playOnAwake;
+
+        public bool _playOnAwake;
+        public bool prewarm = false;
+
 		[Inspectable]
 		public ParticleEmitterConfig _emitterConfig;
 
@@ -71,9 +76,9 @@ namespace Nez.Particles
             set { _emitting = value; }
         }
 
-
-		public ParticleEmitter() : this( new ParticleEmitterConfig() )
-		{}
+		public ParticleEmitter() : this( new ParticleEmitterConfig())
+		{
+        }
 
 		public ParticleEmitter( ParticleEmitterConfig emitterConfig, bool playOnAwake = true )
 		{
@@ -100,12 +105,15 @@ namespace Nez.Particles
 		/// </summary>
 		void init()
 		{
-			// prep our custom BlendState and set the Material with it
-			var blendState = new BlendState();
-			blendState.ColorSourceBlend = blendState.AlphaSourceBlend = _emitterConfig.blendFuncSource;
-			blendState.ColorDestinationBlend = blendState.AlphaDestinationBlend = _emitterConfig.blendFuncDestination;
+            // prep our custom BlendState and set the Material with it
+            if (material == null)
+            {
+                var blendState = new BlendState();
+                blendState.ColorSourceBlend = blendState.AlphaSourceBlend = _emitterConfig.blendFuncSource;
+                blendState.ColorDestinationBlend = blendState.AlphaDestinationBlend = _emitterConfig.blendFuncDestination;
 
-			material = new Material( blendState );
+                material = new Material(blendState);
+            }
 		}
 
 
@@ -113,9 +121,19 @@ namespace Nez.Particles
 
 		public override void onAddedToEntity()
 		{
-			if( _playOnAwake )
-				play();
-		}
+            if (_playOnAwake)
+            {
+                play();
+
+                //ugly serialization fix..
+                enabled = true;
+            }
+
+            if ( prewarm )
+            {
+                emit( (int) _emitterConfig.maxParticles );
+            }
+        }
 
 
 		void IUpdatable.update()
@@ -125,6 +143,9 @@ namespace Nez.Particles
 
 			// prep data for the particle.update method
 			var rootPosition = entity.transform.position + _localOffset;
+
+            _emitterConfig.bounds.x = rootPosition.X - (_emitterConfig.bounds.width / 2);
+            _emitterConfig.bounds.y = rootPosition.Y - (_emitterConfig.bounds.height / 2) ;
 			
 			// if the emitter is active and the emission rate is greater than zero then emit particles
 			if( _active && _emitterConfig.emissionRate > 0 )
@@ -185,8 +206,15 @@ namespace Nez.Particles
 					// particle is good. collect min/max positions for the bounds
 					var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
 					pos += currentParticle.position;
+
+                    Vector2 rotatedParticleSize = Mathf.angleToVector(currentParticle.rotation, currentParticle.particleSize) * currentParticle.scale;
+                    rotatedParticleSize.X = Math.Abs( rotatedParticleSize.X );
+                    rotatedParticleSize.Y = Math.Abs( rotatedParticleSize.Y );
+                    Vector2 endPos = pos + rotatedParticleSize;
+                    pos = pos - rotatedParticleSize;
+
 					Vector2.Min( ref min, ref pos, out min );
-					Vector2.Max( ref max, ref pos, out max );
+					Vector2.Max( ref max, ref endPos, out max );
 					maxParticleSize = System.Math.Max( maxParticleSize, currentParticle.particleSize );
 				}
 			}
@@ -214,6 +242,10 @@ namespace Nez.Particles
 				return;
 
 			var rootPosition = entity.transform.position + _localOffset;
+            SpriteEffects spriteEffect;
+
+            if( _emitterConfig.bounds.width > 0 && _emitterConfig.bounds.height > 0)
+                Debug.drawHollowRect( _emitterConfig.bounds, Color.MediumVioletRed);
 
 			// loop through all the particles updating their location and color
 			for( var i = 0; i < _particles.Count; i++ )
@@ -221,20 +253,64 @@ namespace Nez.Particles
 				var currentParticle = _particles[i];
 				var pos = _emitterConfig.simulateInWorldSpace ? currentParticle.spawnPosition : rootPosition;
 
+                //parallax is determnined on how far the camera from where it was during particle spawn
+                if (currentParticle.cameraAnchor == Vector2.Zero)
+                    currentParticle.cameraAnchor = camera.position;
+
+                pos = pos + parallaxedPosition(camera, currentParticle);
+
+                //flip with velocity
+                if ( _emitterConfig.bounds.width != 0 && _emitterConfig.bounds.height != 0 )
+                {
+                    if ( _emitterConfig.boundsBehaviour == PARTICLE_BOUNDS_BEHAVIOUR.REFLECT )
+                    {
+                        if ( pos.X < _emitterConfig.bounds.left ) currentParticle._direction.X = Math.Abs( currentParticle._direction.X );
+                        else if ( pos.X > _emitterConfig.bounds.right ) currentParticle._direction.X = -Math.Abs( currentParticle._direction.X );
+                        if ( pos.Y < _emitterConfig.bounds.top )
+                            currentParticle._direction.Y = Math.Abs( currentParticle._direction.Y );
+                        else if ( pos.Y > _emitterConfig.bounds.bottom )
+                            currentParticle._direction.Y = -Math.Abs( currentParticle._direction.Y );
+                    }
+                }
+
+                if (_emitterConfig.animations != null && _emitterConfig.animations.Count > 0 && _emitterConfig.animations[currentParticle.currentAnimation] != null)
+                    _emitterConfig.subtexture = _emitterConfig.animations[currentParticle.currentAnimation].frames[currentParticle.animationFrame];
+
+                if( _emitterConfig.flipXWithVelocity && currentParticle._direction.X < 0)
+                {
+                    spriteEffect = SpriteEffects.FlipHorizontally;
+                }
+                else
+                {
+                    spriteEffect = SpriteEffects.None;
+                }
+
 				if( _emitterConfig.subtexture == null )
-					graphics.batcher.draw( graphics.pixelTexture, pos + currentParticle.position, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * 0.5f, SpriteEffects.None, layerDepth );
+					graphics.batcher.draw( graphics.pixelTexture, pos /*+ currentParticle.position*/, currentParticle.color, currentParticle.rotation, Vector2.One, currentParticle.particleSize * currentParticle.scale, spriteEffect, layerDepth );
 				else
-					graphics.batcher.draw( _emitterConfig.subtexture, pos + currentParticle.position, currentParticle.color, currentParticle.rotation, _emitterConfig.subtexture.center, currentParticle.particleSize / _emitterConfig.subtexture.sourceRect.Width, SpriteEffects.None, layerDepth );
+					graphics.batcher.draw( _emitterConfig.subTextures[currentParticle.subTextureID], pos /*+ currentParticle.position*/, currentParticle.color, currentParticle.rotation, _emitterConfig.subTextures[ currentParticle.subTextureID ].center , currentParticle.particleSize * currentParticle.scale, spriteEffect, layerDepth );
 			}
 		}
 
-		#endregion
+        public Vector2 parallaxedPosition(Camera camera, Particle currentParticle)
+        {
+            /*Vector2 distToAnchor = camera.position - currentParticle.cameraAnchor;
+            return new Vector2( distToAnchor.X * currentParticle.parallax.X,
+                                distToAnchor.Y * currentParticle.parallax.Y);*/
+
+            Vector2 parallaxedPosition = new Vector2();
+            parallaxedPosition.X = currentParticle.position.X + Mathf.floor(camera.bounds.left * currentParticle.parallax.X);
+            parallaxedPosition.Y = currentParticle.position.Y + Mathf.floor((camera.bounds.bottom) * currentParticle.parallax.Y);
+            return parallaxedPosition;
+        }
+
+        #endregion
 
 
-		/// <summary>
-		/// removes all particles from the particle emitter
-		/// </summary>
-		public void clear()
+        /// <summary>
+        /// removes all particles from the particle emitter
+        /// </summary>
+        public void clear()
 		{
 			for( var i = 0; i < _particles.Count; i++ )
 				Pool<Particle>.free( _particles[i] );
@@ -244,6 +320,7 @@ namespace Nez.Particles
 		/// <summary>
 		/// plays the particle emitter
 		/// </summary>
+        
 		public void play()
 		{
 			// if we are just unpausing, we only toggle flags and we dont mess with any other parameters

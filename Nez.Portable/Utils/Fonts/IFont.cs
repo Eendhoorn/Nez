@@ -28,6 +28,8 @@ namespace Nez
 		/// <param name="text">Text.</param>
 		Vector2 measureString( StringBuilder text );
 
+        string name { get; }
+
 		/// <summary>
 		/// returns true if the character exists in the font or false if it does not
 		/// </summary>

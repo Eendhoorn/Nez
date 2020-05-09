@@ -24,7 +24,9 @@ namespace Nez.UI
 			_container.setOrigin( AlignInternal.center );
 			_targetElement = targetElement;
 			_container.setTouchable( Touchable.Disabled );
-		}
+
+            _container.setBackground(new PrimitiveDrawable(Color.Blue));
+        }
 
 
 		#region config
@@ -113,6 +115,7 @@ namespace Nez.UI
 		{
 			// we do some rejiggering here by checking for hits on our target and using that
 			var local = _targetElement.screenToLocalCoordinates( point );
+            Debug.drawText("local " + local);
 			if( _targetElement.hit( local ) != null )
 			{
 				if( !_isMouseOver )

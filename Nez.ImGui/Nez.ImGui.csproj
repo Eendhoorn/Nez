@@ -19,7 +19,7 @@
 	
 	<ItemGroup>
 		<ProjectReference Include="../Nez.Portable/Nez.csproj" />
-		<ProjectReference Include="../Nez.Persistence/Nez.Persistence.csproj" />
+		<ProjectReference Include="..\Nez.Persistence\Nez.Persistence.csproj" />
 	</ItemGroup>
 	
 	

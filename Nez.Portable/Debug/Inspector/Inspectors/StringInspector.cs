@@ -13,7 +13,7 @@ namespace Nez
 		{
 			var label = createNameLabel( table, skin, leftCellWidth );
 			_textField = new TextField( getValue<string>(), skin );
-			_textField.setTextFieldFilter( new FloatFilter() );
+			//_textField.setTextFieldFilter( new FloatFilter() );
 			_textField.onTextChanged += ( field, str ) =>
 			{
 				setValue( str );

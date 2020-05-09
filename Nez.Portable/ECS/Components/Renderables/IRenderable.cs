@@ -86,6 +86,28 @@ namespace Nez
 	{
 		public int Compare( IRenderable self, IRenderable other )
 		{
+            var res = other.renderLayer.CompareTo( self.renderLayer );
+            if ( res == 0 )
+            {
+                res = other.layerDepth.CompareTo( self.layerDepth );
+                if ( res == 0 )
+                {
+                    // both null or equal
+                    if ( ReferenceEquals( self.material , other.material ) )
+                        return 0;
+
+                    if ( other.material == null )
+                        res = CompareMaterial( self.material , other.material );
+                        //return -1;
+
+                    //return 1;
+                }
+            }
+
+            return res;
+
+            /*if ( self == null || other == null ) return -1;
+
 			var res = other.renderLayer.CompareTo( self.renderLayer );
 			if( res == 0 )
 			{
@@ -95,16 +117,16 @@ namespace Nez
                     // both null or equal
                     //if( CheckEqual(self.material, other.material))//ReferenceEquals( self.material, other.material ) )
                     //return 0;
-                    return CompareMaterial(self.material, other.material);
+                    res = CompareMaterial(self.material, other.material);
 
 					if( other.material == null )
 						return -1;
 
-					return 1;
+					//return 1;
 				}
 			}
-			return res;
-		}
+			return res;*/
+        }
 
         //check if 2 materials are equal, material can overload equals to determine wether they can be batched, when using different
         //parameter values for example

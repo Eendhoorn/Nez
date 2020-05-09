@@ -217,6 +217,10 @@ namespace Nez.UI.Drawable
             if ( desiredFrame != currentFrame )
             {
                 currentFrame = desiredFrame;
+            
+                //prevent crashes when editing animation speed in runtime
+                if (currentFrame >= _currentAnimation.frames.Count || currentFrame < 0) currentFrame = 0; 
+
                 setSubtexture( _currentAnimation.frames[ currentFrame ] );
                 //handleFrameChanged();
 

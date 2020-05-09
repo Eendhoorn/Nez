@@ -52,7 +52,7 @@ namespace Nez.TextureAtlases
 					{
 						subtextures[i] = new Subtexture( texture, spriteRectangles[i] );
 					}
-				}
+                }
 				
 				return new TextureAtlas( spriteNames, subtextures, spriteAnimationDetails, animationFPS );
 			}

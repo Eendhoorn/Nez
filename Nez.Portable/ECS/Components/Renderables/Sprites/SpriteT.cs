@@ -26,6 +26,7 @@ namespace Nez.Sprites
 			set => play( value );
 		}
 
+        [Inspectable]
 		Dictionary<TEnum, SpriteAnimation> _animations;
         public Dictionary<TEnum,SpriteAnimation> animations
         {
@@ -180,6 +181,7 @@ namespace Nez.Sprites
 
 			// fetch our desired frame
 			var desiredFrame = Mathf.floorToInt( elapsedTime / _currentAnimation.secondsPerFrame );
+            if ( desiredFrame >= _currentAnimation.frames.Count ) desiredFrame = 0;
 			if( desiredFrame != currentFrame )
 			{
 				currentFrame = desiredFrame;
@@ -197,10 +199,15 @@ namespace Nez.Sprites
 			}
 		}
 
-		#endregion
+        public void addAnimation( object fLY , SpriteAnimation spriteAnimation )
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
 
-		public Sprite<TEnum> addAnimation( TEnum key, SpriteAnimation animation )
+        public Sprite<TEnum> addAnimation( TEnum key, SpriteAnimation animation )
 		{
 			// if we have no subtexture use the first frame we find
 			if( _subtexture == null && animation.frames.Count > 0 )

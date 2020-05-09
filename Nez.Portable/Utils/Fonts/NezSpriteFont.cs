@@ -14,6 +14,10 @@ namespace Nez
 
 		SpriteFont _font;
 		readonly Dictionary<char,SpriteFont.Glyph> _glyphs;
+        public string name
+        {
+            set;get;
+        }
 
 		/// <summary>
 		/// this sucker gets used a lot so we cache it to avoid having to create it every frame

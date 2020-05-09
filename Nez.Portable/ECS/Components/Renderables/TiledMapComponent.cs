@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Nez
 {
-	public class TiledMapComponent : RenderableComponent, IUpdatable
+	public class TilemapMovementComponent : RenderableComponent, IUpdatable
 	{
 		public TiledMap tiledMap;
 
@@ -26,7 +26,7 @@ namespace Nez
 		Collider[] _colliders;
 
 
-		public TiledMapComponent( TiledMap tiledMap, string collisionLayerName = null, bool shouldCreateColliders = true )
+		public TilemapMovementComponent( TiledMap tiledMap, string collisionLayerName = null, bool shouldCreateColliders = true )
 		{
 			this.tiledMap = tiledMap;
 			_shouldCreateColliders = shouldCreateColliders;

@@ -70,7 +70,8 @@ namespace Nez.BitmapFonts
 				padBottom = padBottom,
 				padRight = padRight,
 				padLeft = padLeft,
-				descent = descent
+				descent = descent,
+                name = reader.AssetName
 			};
 		}
 	}
