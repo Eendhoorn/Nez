@@ -10,9 +10,9 @@ namespace Nez.ImGuiTools
 {
 	class SceneGraphWindow
 	{
-		PostProcessorsPane _postProcessorsPane = new PostProcessorsPane();
-		RenderersPane _renderersPane = new RenderersPane();
-		EntityPane _entityPane = new EntityPane();
+		public PostProcessorsPane _postProcessorsPane = new PostProcessorsPane();
+		public RenderersPane _renderersPane = new RenderersPane();
+		public EntityPane _entityPane = new EntityPane();
 
 		public void onSceneChanged()
 		{

@@ -38,7 +38,8 @@ namespace Nez.ImGuiTools.TypeInspectors
 		public override void drawMutable()
 		{
             _inspectMethodAction();
-			handleTooltip();
+            HandleContextMenu();
+            handleTooltip();
 		}
 
 		void inspectBoolean()

@@ -40,7 +40,7 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 			NezImGui.ShowContextMenuTooltip();
 
 			// context menu for entity commands
-			ImGui.OpenPopupOnItemClick( "entityContextMenu", 1 );
+			ImGui.OpenPopupOnItemClick( "entityContextMenu", ImGuiMouseButton.Right );
 			drawEntityContextMenuPopup( entity );
 
 			// we are looking for a double-click that is not on the arrow
@@ -87,7 +87,7 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 						ImGui.CloseCurrentPopup();
 					}
 					
-					ImGui.SameLine( ImGui.GetContentRegionAvailWidth() - ImGui.GetItemRectSize().X );
+					ImGui.SameLine( ImGui.GetContentRegionAvail().X - ImGui.GetItemRectSize().X );
 
 					ImGui.PushStyleColor( ImGuiCol.Button, Microsoft.Xna.Framework.Color.Green.PackedValue );
 					if( ImGui.Button( "Create" ) )
@@ -122,7 +122,7 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 						ImGui.CloseCurrentPopup();
 					}
 					
-					ImGui.SameLine( ImGui.GetContentRegionAvailWidth() - ImGui.GetItemRectSize().X );
+					ImGui.SameLine( ImGui.GetContentRegionAvail().X - ImGui.GetItemRectSize().X );
 
 					ImGui.PushStyleColor( ImGuiCol.Button, Microsoft.Xna.Framework.Color.Green.PackedValue );
 					if( ImGui.Button( "Create" ) )

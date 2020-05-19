@@ -20,7 +20,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 			var fields = ReflectionUtils.getFields( _valueType );
 			foreach( var field in fields )
 			{
-				if( !field.IsPublic && !field.IsDefined( typeof( InspectableAttribute ) ) )
+				if( !field.IsPublic && !field.IsDefined( typeof( InspectableAttribute ) ) || field.IsStatic )
 					continue;
 
 				var inspector = TypeInspectorUtils.getInspectorForType( field.FieldType, _target, field );
@@ -58,13 +58,16 @@ namespace Nez.ImGuiTools.TypeInspectors
 			NezImGui.BeginBorderedGroup();
 			
 			_isHeaderOpen = ImGui.CollapsingHeader( $"{_name}" );
-			if( _isHeaderOpen )
+            HandleContextMenu();
+
+            if ( _isHeaderOpen )
 			{
 				foreach( var i in _inspectors )
 					i.draw();
 			}
 			NezImGui.EndBorderedGroup( new System.Numerics.Vector2( 4, 1 ), new System.Numerics.Vector2( 4, 2 ) );
-			ImGui.Unindent();
+
+            ImGui.Unindent();
 		}
 
 		/// <summary>

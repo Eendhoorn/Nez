@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reflection;
 using ImGuiNET;
 
@@ -32,13 +33,15 @@ namespace Nez.ImGuiTools.TypeInspectors
 		protected bool _isReadOnly;
 		protected string _tooltip;
 
+        protected int arrayIndex = 0;
+        protected object newValue;
 		
 		/// <summary>
 		/// used to prep the inspector
 		/// </summary>
 		public virtual void initialize()
 		{
-			_tooltip = _memberInfo.getCustomAttribute<TooltipAttribute>()?.tooltip;
+			if( _memberInfo != null ) _tooltip = _memberInfo.getCustomAttribute<TooltipAttribute>()?.tooltip;
 		}
 
 		/// <summary>
@@ -90,6 +93,23 @@ namespace Nez.ImGuiTools.TypeInspectors
 				ImGui.EndTooltip();
 			}
 		}
+
+        protected void HandleContextMenu()
+        {
+            if ( ImGui.BeginPopupContextItem(_name ) )
+            {
+                //ImGui.Text(_name);
+                if (ImGui.Selectable("copy"))
+                {
+                    Clipboard.value = getValue();
+                }
+                if( Clipboard.value != null && Clipboard.value.GetType() == _valueType && ImGui.Selectable("paste") )
+                {
+                    setValue(Clipboard.value);
+                }
+                ImGui.EndPopup();
+            }
+        }
 
 
 		#region Set target methods
@@ -176,14 +196,45 @@ namespace Nez.ImGuiTools.TypeInspectors
 			}
 		}
 
-		/// <summary>
-		/// this version will first fetch the struct before getting/setting values on it when invoking the getter/setter
-		/// </summary>
-		/// <returns>The struct target.</returns>
-		/// <param name="target">Target.</param>
-		/// <param name="structName">Struct name.</param>
-		/// <param name="field">Field.</param>
-		public void setStructTarget( object target, AbstractTypeInspector parentInspector, PropertyInfo prop )
+        public virtual void setArrayTarget(IList list , int index , object item = null)
+        {
+            _memberInfo = null;
+            _name = index.ToString();
+            arrayIndex = index;
+
+            Type[] genericTypes = list.GetType().GenericTypeArguments;
+            if (genericTypes.Length > 0)
+                _valueType = genericTypes[0];
+            else
+                _valueType = item == null ? list.GetType().GetElementType() : item.GetType();
+
+            try
+            {
+                if (item == null) newValue = Activator.CreateInstance(_valueType);
+            }
+            catch
+            {
+                //.WriteLine("could not make array item value for item of type " + _valueType);
+            }
+
+            _getter = obj =>
+            {
+                return list[this.arrayIndex];
+            };
+            _setter = val =>
+                {
+                list[this.arrayIndex] = val; //field.SetValue( target, val );
+            };
+        }
+
+        /// <summary>
+        /// this version will first fetch the struct before getting/setting values on it when invoking the getter/setter
+        /// </summary>
+        /// <returns>The struct target.</returns>
+        /// <param name="target">Target.</param>
+        /// <param name="structName">Struct name.</param>
+        /// <param name="field">Field.</param>
+        public void setStructTarget( object target, AbstractTypeInspector parentInspector, PropertyInfo prop )
 		{
 			_target = target;
 			_memberInfo = prop;

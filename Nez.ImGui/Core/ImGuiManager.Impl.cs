@@ -30,7 +30,7 @@ namespace Nez.ImGuiTools
 			bottomRight
 		}
 
-		void loadSettings()
+		protected virtual void loadSettings()
 		{
 			var fileDataStore = Core.services.GetOrAddService<FileDataStore>();
 			KeyValueDataStore.Default.Load( fileDataStore );
@@ -43,7 +43,7 @@ namespace Nez.ImGuiTools
 			Core.emitter.addObserver( CoreEvents.Exiting, persistSettings );
 		}
 
-		void persistSettings()
+		protected virtual void persistSettings()
 		{
 			KeyValueDataStore.Default.Set( kShowStyleEditor, showStyleEditor );
 			KeyValueDataStore.Default.Set( kShowSceneGraphWindow, showSceneGraphWindow );
@@ -56,7 +56,7 @@ namespace Nez.ImGuiTools
 		/// <summary>
 		/// here we do some cleanup in preparation for a new Scene
 		/// </summary>
-		void onSceneChanged()
+		protected void onSceneChanged()
 		{
 			// when the Scene changes we need to rewire ourselves up as the IFinalRenderDelegate in the new Scene
 			// if we were previously enabled and do some cleanup
@@ -67,7 +67,7 @@ namespace Nez.ImGuiTools
 				onEnabled();
 		}
 
-		void unload()
+		protected virtual void unload()
 		{
 			_drawCommands.Clear();
 			_entityInspectors.Clear();
@@ -83,7 +83,7 @@ namespace Nez.ImGuiTools
 		/// <summary>
 		/// draws the game window and deals with overriding Nez.Input when appropriate
 		/// </summary>
-		void drawGameWindow()
+		protected virtual void drawGameWindow()
 		{
 			if( _lastRenderTarget == null )
 				return;
@@ -129,7 +129,7 @@ namespace Nez.ImGuiTools
 		/// <summary>
 		/// handles any SetNextWindow* options chosen from a menu
 		/// </summary>
-		void handleForcedGameViewParams()
+		protected virtual void handleForcedGameViewParams()
 		{
 			if( _gameViewForcedSize.HasValue )
 			{
@@ -194,7 +194,7 @@ namespace Nez.ImGuiTools
 		/// converts the mouse position from global window position to the game window's coordinates and overrides Nez.Input with
 		/// the new value. This keeps input working properly in the game window.
 		/// </summary>
-		void overrideMouseInput()
+		protected virtual void overrideMouseInput()
 		{
 			// ImGui.GetCursorScreenPos() is the position of top-left pixel in windows drawable area
 			var offset = new Vector2( ImGui.GetCursorScreenPos().X, ImGui.GetCursorScreenPos().Y );

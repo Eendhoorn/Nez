@@ -153,7 +153,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 			if( valueType.IsArray && valueType.GetArrayRank() == 1 && ListInspector.kSupportedTypes.contains( valueType.GetElementType() ) )
 				return new TI.ListInspector();
 			if( valueType.IsGenericType && iListType.IsAssignableFrom( valueType ) &&
-				valueType.GetInterface( nameof( IList ) ) != null && ListInspector.kSupportedTypes.contains( valueType.GetGenericArguments()[0] ) )
+				valueType.GetInterface( nameof( IList ) ) != null /*&& ListInspector.kSupportedTypes.contains( valueType.GetGenericArguments()[0] )*/ )
 				return new TI.ListInspector();
 
 			// check for custom inspectors before checking Nez types in case a subclass implemented one
@@ -175,9 +175,10 @@ namespace Nez.ImGuiTools.TypeInspectors
 			if( valueType != objectType && valueType.IsDefined( serializationAttrType ) )
 				return new ObjectInspectors.ObjectInspector();
 
-			Debug.info( $"no inspector found for type {valueType} on object {target.GetType()}" );
+            Debug.info($"no inspector found for type {valueType} on object {target}");
+            //Debug.info( $"no inspector found for type {valueType} on object {target.GetType()}" );
 
-			return null;
+            return null;
 		}
 
 		/// <summary>

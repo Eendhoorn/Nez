@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Nez.ImGuiTools.ObjectInspectors;
 using Num = System.Numerics;
 
 namespace Nez.ImGuiTools.TypeInspectors
@@ -13,6 +14,9 @@ namespace Nez.ImGuiTools.TypeInspectors
 		IList _list;
 		Type _elementType;
 		bool _isArray;
+
+        //List<List<AbstractTypeInspector>> itemInspectors = new List<List<AbstractTypeInspector>>();
+        List<StructInspector> itemInspectors = new List<StructInspector>();
 
 		public override void initialize()
 		{
@@ -36,12 +40,54 @@ namespace Nez.ImGuiTools.TypeInspectors
 					_list = (IList)Activator.CreateInstance( constructedListType );
 				}
 			}
+            else
+            {
+                if ( _elementType.IsClass || _elementType.IsValueType && !_elementType.IsPrimitive)
+                {
+                    for (var i = 0 ; i < _list.Count ; i++)
+                    {
+                        //itemInspectors.Add(new List<AbstractTypeInspector>());
+                        //itemInspectors[i] = TypeInspectorUtils.getInspectableProperties(_list[i]);
+                        addStructInspector(i);
+                    }
+                }
+            }
 		}
+
+        public void addStructInspector(int index)
+        {
+            StructInspector inspector = new StructInspector();
+            inspector.setArrayTarget(_list , index , _list[index]);
+            inspector.initialize();
+            itemInspectors.Add(inspector);
+        }
 
 		public override void drawMutable()
 		{
 			ImGui.Indent();
-			if( ImGui.CollapsingHeader( $"{_name} [{_list.Count}]###{_name}", ImGuiTreeNodeFlags.FramePadding ) )
+            bool isHeaderOpen = ImGui.CollapsingHeader($"{_name} [{_list.Count}]###{_name}" , ImGuiTreeNodeFlags.FramePadding);
+
+            //context menu
+            if (ImGui.BeginPopupContextItem(_name))
+            {
+                //ImGui.Text(_name);
+                if (ImGui.Selectable("copy (list)"))
+                {
+                    Clipboard.value = getValue();
+                }
+                if (Clipboard.value != null && Clipboard.value.GetType() == _valueType && ImGui.Selectable("paste (list)"))
+                {
+                    setValue(Clipboard.value);
+                }
+
+                if (Clipboard.value != null && Clipboard.value.GetType() == _elementType && ImGui.Selectable("paste (item)"))
+                {
+                    AddElement();
+                }
+                ImGui.EndPopup();
+            }
+
+            if ( isHeaderOpen )
 			{
 				ImGui.Indent();
 
@@ -49,14 +95,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 				{
 					if( ImGui.Button( "Add Element" ) )
 					{
-						if( _elementType == typeof( string ) )
-						{
-							_list.Add( "" );
-						}
-						else
-						{
-							_list.Add( Activator.CreateInstance( _elementType ) );
-						}
+                        AddElement();
 					}
 
 					ImGui.SameLine( ImGui.GetWindowWidth() - ImGui.GetItemRectSize().X - ImGui.GetStyle().ItemInnerSpacing.X );
@@ -74,22 +113,77 @@ namespace Nez.ImGuiTools.TypeInspectors
 				}
 
 				ImGui.PushItemWidth( -ImGui.GetStyle().IndentSpacing );
-				for( var i = 0; i < _list.Count; i++ )
+
+
+                for ( var i = 0; i < _list.Count; i++ )
 				{
-					if( _elementType == typeof( int ) )
-						drawWidget( (int)Convert.ChangeType( _list[i], _elementType ), i );
-					else if( _elementType == typeof( float ) )
-						drawWidget( (float)Convert.ChangeType( _list[i], _elementType ), i );
-					else if( _elementType == typeof( string ) )
-						drawWidget( (string)Convert.ChangeType( _list[i], _elementType ), i );
-					else if( _elementType == typeof( Vector2 ) )
-						drawWidget( (Vector2)Convert.ChangeType( _list[i], _elementType ), i );
+                    if (_elementType == typeof(int))
+                        drawWidget((int) Convert.ChangeType(_list[i] , _elementType) , i);
+                    else if (_elementType == typeof(float))
+                        drawWidget((float) Convert.ChangeType(_list[i] , _elementType) , i);
+                    else if (_elementType == typeof(string))
+                        drawWidget((string) Convert.ChangeType(_list[i] , _elementType) , i);
+                    else if (_elementType == typeof(Vector2))
+                        drawWidget((Vector2) Convert.ChangeType(_list[i] , _elementType) , i);
+                    else
+                        drawWidget( _list[i], i);
 				}
+
 				ImGui.PopItemWidth();
 				ImGui.Unindent();
 			}
-			ImGui.Unindent();
+            ImGui.Unindent();
 		}
+
+        private void AddElement()
+        {
+            if (_elementType == typeof(string))
+            {
+                _list.Add("");
+            }
+            else
+            {
+                _list.Add(Activator.CreateInstance(_elementType));
+                if (_elementType.IsClass || _elementType.IsValueType && !_elementType.IsPrimitive)
+                {
+                    addStructInspector(_list.Count - 1);
+                }
+            }
+        }
+
+        void drawWidget(object value, int index)
+        {
+            itemInspectors[index].draw();
+            
+            /*for( int i = 0 ; i < itemInspectors.Count ;i++)
+            {
+                for(int j = 0; j < itemInspectors[i].Count; j++ )
+                {
+                    itemInspectors[i][j].draw();
+                }
+            }*/
+
+            /*
+            if (_component.GetType().IsGenericType)
+            {
+                var genericType = _component.GetType().GetGenericArguments()[0].Name;
+                _name = $"{_component.GetType().BaseType.Name}<{genericType}>";
+            }
+            else
+            {
+                _name = _component.GetType().Name;
+            }*/
+
+            /*var methods = TypeInspectorUtils.GetAllMethodsWithAttribute<InspectorDelegateAttribute>(value.GetType());
+            foreach (var method in methods)
+            {
+                // only allow zero param methods
+                if (method.GetParameters().Length == 0)
+                {
+                    _componentDelegateMethods.Add((Action) Delegate.CreateDelegate(typeof(Action) , _component , method));
+                }
+            }*/
+        }
 
 		void drawWidget( int value, int index )
 		{
